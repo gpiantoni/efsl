@@ -242,24 +242,6 @@ for r = 1:numel(allrdir) % r01, r02 etc
     wfIMG{r}{f,1} = [r0dir allfdir(f).name ',1'];
   end
 end
-%------------%
-
-%------------%
-%-Smooth
-matlabbatch = [];
-
-matlabbatch{1}.spm.spatial.smooth.data = cat(1, wfIMG{:});
-
-matlabbatch{1}.spm.spatial.smooth.fwhm = [1 1 1] * cfg.smoo;
-matlabbatch{1}.spm.spatial.smooth.dtype = 0;
-matlabbatch{1}.spm.spatial.smooth.im = 0;
-matlabbatch{1}.spm.spatial.smooth.prefix = 's';
-
-spm_jobman('run', matlabbatch)
-%------------%
-
-%---------------------------%
-%-Clean up and time
 
 %-------%
 %-cleanup functional
@@ -268,11 +250,31 @@ for c = 1:numel(cIMG)
   delete(  cIMG{c}(1:end-2))
   delete([ cIMG{c}(1:end-5) 'hdr'])
 end
+%------------%
 
-cIMG = cat(1, wfIMG{:});
-for c = 1:numel(cIMG)
-  delete(  cIMG{c}(1:end-2))
-  delete([ cIMG{c}(1:end-5) 'hdr'])
+if ~cfg.melo
+  %------------%
+  %-Smooth
+  matlabbatch = [];
+
+  matlabbatch{1}.spm.spatial.smooth.data = cat(1, wfIMG{:});
+
+  matlabbatch{1}.spm.spatial.smooth.fwhm = [1 1 1] * cfg.smoo;
+  matlabbatch{1}.spm.spatial.smooth.dtype = 0;
+  matlabbatch{1}.spm.spatial.smooth.im = 0;
+  matlabbatch{1}.spm.spatial.smooth.prefix = 's';
+
+  spm_jobman('run', matlabbatch)
+  %------------%
+
+  %-------%
+  %-cleanup functional
+  cIMG = cat(1, wfIMG{:});
+  for c = 1:numel(cIMG)
+    delete(  cIMG{c}(1:end-2))
+    delete([ cIMG{c}(1:end-5) 'hdr'])
+  end
+  %-------%
 end
 
 %-------%

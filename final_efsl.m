@@ -66,7 +66,7 @@ cfg.rslt = [cfg.anly 'spm/'];
 %-----------------%
 %-allow parallel computing, using bash
 subjall = [14 8 10 5 11 3 12 7 13 1 9 6 4 2];
-cfg.step = [13];
+cfg.step = [5 6];
 %-----------------%
 
 %-----------------%
@@ -120,6 +120,7 @@ cfg.smoo = 4; % <- bc names change depending on smoothing (although smoothing is
 
 %-----------------%
 %-cfg sl06_prepr_fmri
+cfg.melo = true;
 %-----------------%
 
 %-----------------%
@@ -311,6 +312,8 @@ output = sprintf('Analysis started at %s on %s\n', ...
   datestr(now, 'HH:MM:SS'), datestr(now, 'dd-mmm-yy'));
 fprintf(output)
 fwrite(fid, output);
+[~, gitversion] = system(['git rev-parse HEAD']);
+fwrite(fid, sprintf('GIT VERSION: %s\n', gitversion));
 
 %-----------------%
 %-cfg in log
