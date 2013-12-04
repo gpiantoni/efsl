@@ -66,7 +66,7 @@ cfg.rslt = [cfg.anly 'spm/'];
 %-----------------%
 %-allow parallel computing, using bash
 subjall = [14 8 10 5 11 3 12 7 13 1 9 6 4 2];
-cfg.step = [5 6];
+cfg.step = [6];
 %-----------------%
 
 %-----------------%
@@ -121,6 +121,11 @@ cfg.smoo = 4; % <- bc names change depending on smoothing (although smoothing is
 %-----------------%
 %-cfg sl06_prepr_fmri
 cfg.melo = true;
+%-----------------%
+
+%-----------------%
+%-cfg sl06b_get_melodic
+cfg.clme = [cfg.anly 'melodic_feat/clean/'];
 %-----------------%
 
 %-----------------%
@@ -398,9 +403,16 @@ end
 %---------------------------%
 %-fMRI preprocessing
 if any(cfg.step ==  6)
-  disp('running sl06_prepr_fmri')
-  % sl06_prepr_fmri(cfgcell{1}, subjcell{1})
-  qsubcellfun(@sl06_prepr_fmri, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 60*60*24)
+  if ~cfg.melo || ...  % we don't care about melodic
+      numel(dir([cfg.clme 'f*'])) < 3  % folder is empty
+    disp('running sl06_prepr_fmri')
+    % sl06_prepr_fmri(cfgcell{1}, subjcell{1})
+    qsubcellfun(@sl06_prepr_fmri, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 60*60*24)
+  else
+    disp('running sl06b_get_melodic')
+    % sl06b_get_melodic(cfgcell{1}, subjcell{1})
+    qsubcellfun(@sl06b_get_melodic, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 60*60*24)
+  end    
 end
 %---------------------------%
 
