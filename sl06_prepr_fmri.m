@@ -216,43 +216,44 @@ else
 end
 %-----------------%
 
-%------------%
-%-Normalize functional
-matlabbatch = [];
-
-matlabbatch{1}.spm.spatial.normalise.write.subj.matname = {seg_sn};
-matlabbatch{1}.spm.spatial.normalise.write.subj.resample = cat(1, fIMG{:}); % concatenate images
-matlabbatch{1}.spm.spatial.normalise.write.roptions.preserve = 0;
-matlabbatch{1}.spm.spatial.normalise.write.roptions.bb = [-78 -112 -50
-  78 76 85];
-matlabbatch{1}.spm.spatial.normalise.write.roptions.vox = [2 2 2]; % <- only difference with structural
-matlabbatch{1}.spm.spatial.normalise.write.roptions.interp = 3;
-matlabbatch{1}.spm.spatial.normalise.write.roptions.wrap = [0 0 0];
-matlabbatch{1}.spm.spatial.normalise.write.roptions.prefix = 'w';
-
-spm_jobman('run', matlabbatch)
-
-%------%
-%-Output
-for r = 1:numel(allrdir) % r01, r02 etc
-  r0dir = [rdir allrdir(r).name filesep];
-  allfdir = dir([r0dir 'wf*.img']);
-  
-  for f = 1:numel(allfdir)
-    wfIMG{r}{f,1} = [r0dir allfdir(f).name ',1'];
-  end
-end
-
-%-------%
-%-cleanup functional
-cIMG = cat(1, fIMG{:});
-for c = 1:numel(cIMG)
-  delete(  cIMG{c}(1:end-2))
-  delete([ cIMG{c}(1:end-5) 'hdr'])
-end
-%------------%
-
 if ~cfg.melo
+  %------------%
+  %-Normalize functional
+  matlabbatch = [];
+  
+  matlabbatch{1}.spm.spatial.normalise.write.subj.matname = {seg_sn};
+  matlabbatch{1}.spm.spatial.normalise.write.subj.resample = cat(1, fIMG{:}); % concatenate images
+  matlabbatch{1}.spm.spatial.normalise.write.roptions.preserve = 0;
+  matlabbatch{1}.spm.spatial.normalise.write.roptions.bb = [-78 -112 -50
+    78 76 85];
+  matlabbatch{1}.spm.spatial.normalise.write.roptions.vox = [2 2 2]; % <- only difference with structural
+  matlabbatch{1}.spm.spatial.normalise.write.roptions.interp = 3;
+  matlabbatch{1}.spm.spatial.normalise.write.roptions.wrap = [0 0 0];
+  matlabbatch{1}.spm.spatial.normalise.write.roptions.prefix = 'w';
+  
+  spm_jobman('run', matlabbatch)
+  
+  %------%
+  %-Output
+  for r = 1:numel(allrdir) % r01, r02 etc
+    r0dir = [rdir allrdir(r).name filesep];
+    allfdir = dir([r0dir 'wf*.img']);
+    
+    for f = 1:numel(allfdir)
+      wfIMG{r}{f,1} = [r0dir allfdir(f).name ',1'];
+    end
+  end
+  
+  %-------%
+  %-cleanup functional
+  cIMG = cat(1, fIMG{:});
+  for c = 1:numel(cIMG)
+    delete(  cIMG{c}(1:end-2))
+    delete([ cIMG{c}(1:end-5) 'hdr'])
+  end
+  %------------%
+
+
   %------------%
   %-Smooth
   matlabbatch = [];
