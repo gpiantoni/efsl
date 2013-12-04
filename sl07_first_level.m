@@ -55,8 +55,15 @@ for r = 1:numel(allrdir) % r01, r02 etc
     swfIMG{r}{f,1} = [r0dir allfdir(f).name ',1'];
   end
   
-  allrp = dir([r0dir 'rp*.txt']);
-  rp{r} = [r0dir allrp(1).name];
+  % D has also regressed out any residual effects of movement using the
+  % movement parameters from affine realignment of the volumes, don't do
+  % any further realignment in SPM (and of course don't include motion
+  % parameters in your stats model in SPM)
+  
+  if ~cfg.melo
+    allrp = dir([r0dir 'rp*.txt']);
+    rp{r} = [r0dir allrp(1).name];
+  end
   
 end
 %-------%
@@ -163,7 +170,9 @@ if strfind(cfg.AorB, 'A')
       end
       
       matlabbatch{1}.spm.stats.fmri_spec.sess(rcnt).multi = {''};
-      matlabbatch{1}.spm.stats.fmri_spec.sess(rcnt).multi_reg = rp(rcnt);
+      if ~cfg.melo
+         matlabbatch{1}.spm.stats.fmri_spec.sess(rcnt).multi_reg = rp(rcnt);
+      end
       matlabbatch{1}.spm.stats.fmri_spec.sess(rcnt).hpf = 128;
     end
     
@@ -427,7 +436,9 @@ if strfind(cfg.AorB, 'B')
       end
       
       matlabbatch{1}.spm.stats.fmri_spec.sess(rcnt).multi = {''};
-      matlabbatch{1}.spm.stats.fmri_spec.sess(rcnt).multi_reg = rp(rcnt);
+      if ~cfg.melo
+        matlabbatch{1}.spm.stats.fmri_spec.sess(rcnt).multi_reg = rp(rcnt);
+      end
       matlabbatch{1}.spm.stats.fmri_spec.sess(rcnt).hpf = 128;
       %-------%
     end
