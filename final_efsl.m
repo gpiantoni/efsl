@@ -29,7 +29,14 @@ function final_efsl(opt)
 % 11/01/18 has a log file, send email (needs jvm)
 % 11/01/18 created
 
-cfg.base = '/data1/projects/efsl/';
+[~, host] = system('hostname');
+if strcmp(host(end-12:end-1), 'partners.org')
+  cfg.base = '/PHShome/gp902/projects/efsl/';
+  toolboxdir = '/PHShome/gp902/toolbox/';
+else
+  cfg.base = '/data1/projects/efsl/';
+  toolboxdir = '/usr/local/toolbox/';
+end
 
 %-------------------------------------%
 %-Paths (order is important)----------%
@@ -39,12 +46,12 @@ cfg.scrp = [cfg.base 'scripts/'];
 
 if ~exist('crc_main')
   addpath([cfg.scrp 'final/'])
-  addpath('/usr/local/toolbox/FASST/') % <- works from sl03_sw_sp_det
-  addpath('/usr/local/toolbox/spm8/')
-  addpath(genpath('/usr/local/toolbox/spm8/external/fieldtrip/'));
-  addpath('/usr/local/toolbox/pppi_peak/PPPI/')
-  addpath /usr/local/MATLAB/R2012b/toolbox/stats/stats/
-  addpath /data1/toolbox/fieldtrip/qsub/
+  addpath([toolboxdir 'FASST/']) % <- works from sl03_sw_sp_det
+  addpath([toolboxdir 'spm8/'])
+  addpath(genpath([toolboxdir 'spm8/external/fieldtrip/']));
+  addpath([toolboxdir 'pppi_peak/PPPI/'])
+  % addpath /usr/local/MATLAB/R2012b/toolbox/stats/stats/
+  addpath([toolboxdir 'fieldtrip/qsub/'])
   
   spm_jobman('initcfg')
   fast = crc_cfg_fasst;
@@ -195,7 +202,7 @@ cfg.outp = [cfg.anly 'output/'];
 
 %-------%
 %-create_mask: mask at the second level (for both sl08 and sl09)
-cfg.Dwfu = '/usr/local/toolbox/WFU_PickAtlas_3.0.1/wfu_pickatlas/MNI_atlas_templates/';
+cfg.Dwfu = [toolboxdir 'WFU_PickAtlas_3.0.1/wfu_pickatlas/MNI_atlas_templates/'];
 cfg.dMsk = [cfg.anly 'masks/'];
 
 % 'no', 'con1' or other
@@ -266,7 +273,7 @@ cfg.gdLC = [6 -38 -22; -6 -38 -22;
             6 -38 -24; -6 -38 -24;
             6 -36 -24; -6 -36 -24;
             4 -36 -24; -4 -36 -24]; % if peak is here, it's LC! (it might depend on voxel size)
-cfg.csvf = '/data1/projects/efsl/analysis/spm/efsl.csv';
+cfg.csvf = [cfg.anly 'spm/efsl.csv'];
 %-------%
 %-----------------%
 %---------------------------%
@@ -335,7 +342,7 @@ fclose(fid);
 %-------------------------------------%
 subjcell = num2cell(subjall);
 cfgcell = repmat({cfg}, 1, numel(subjall));
-cd /data/projects/efsl/scripts/final/qsublog
+cd([cfg.scrp 'final/qsublog'])
 
 %---------------------------%
 %-if running the exact same analysis, remove previous results
@@ -421,8 +428,8 @@ end
 % don't remove tdir for the moment, include parametric!
 if any(cfg.step ==  7)
   disp('running sl07_first_level')
-  % sl07_first_level(cfgcell{1}, subjcell{1}) %, 'memreq', 5*1024^3);
-  qsubcellfun(@sl07_first_level, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 60*60*24) %, 'memreq', 5*1024^3);
+  % sl07_first_level(cfg, subjall(subj))
+  qsubcellfun(@sl07_first_level, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 60*60*24, 'queue', 'matlab');
 end
 %---------------------------%
 %-------------------------------------%
@@ -470,7 +477,7 @@ if strcmp(cfg.LCdf(1:3), 'ROI') || exist([cfg.dirB cfg.evtB(cfg.LCic).name files
   %---------------------------%
   %-ppi for each subject
   if any(cfg.step == 11)
-    cd /data/projects/efsl/scripts/final/qsublog
+    cd([cfg.scrp 'final/qsublog'])
     disp('running sl11_ppi_subj')
     qsubcellfun(@sl11_ppisubj, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 60*60*24)
   end
@@ -498,5 +505,5 @@ end
 % send_email(cfg)
 %-----------------%
 
-cd /data/projects/efsl/scripts/final/
+cd([cfg.scrp 'final/'])
 %-------------------------------------%
