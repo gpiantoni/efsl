@@ -73,7 +73,7 @@ cfg.rslt = [cfg.anly 'spm/'];
 %-----------------%
 %-allow parallel computing, using bash
 subjall = [14 8 10 5 11 3 12 7 13 1 9 6 4 2];
-cfg.step = [7];
+cfg.step = [13];
 %-----------------%
 
 %-----------------%
@@ -127,7 +127,7 @@ cfg.smoo = 4; % <- bc names change depending on smoothing (although smoothing is
 
 %-----------------%
 %-cfg sl06_prepr_fmri
-cfg.melo = true;
+cfg.melo = false;
 %-----------------%
 
 %-----------------%
@@ -342,6 +342,8 @@ fclose(fid);
 %-------------------------------------%
 subjcell = num2cell(subjall);
 cfgcell = repmat({cfg}, 1, numel(subjall));
+rmdir([cfg.scrp 'final/qsublog'], 's')
+mkdir([cfg.scrp 'final/qsublog'])
 cd([cfg.scrp 'final/qsublog'])
 
 %---------------------------%
@@ -357,7 +359,7 @@ end
 % it deletes subject dir!
 if any(cfg.step ==  1)
   disp('running sl01_getdata')
-  qsubcellfun(@sl01_getdata, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 60*60*24)
+  qsubcellfun(@sl01_getdata, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 60*60*24, 'queue', 'matlab')
 end
 %---------------------------%
 
@@ -369,7 +371,7 @@ if any(cfg.step ==  2) && 0
     warning('using backup markers: sl02_prepr_eeg is not necessary')
   else
     disp('running sl02_prepr_eeg')
-    qsubcellfun(@sl02_prepr_eeg, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 60*60*24)
+    qsubcellfun(@sl02_prepr_eeg, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 60*60*24, 'queue', 'matlab')
   end
   
 end
@@ -383,7 +385,7 @@ if any(cfg.step ==  3)
   else
     
     disp('running sl03_sw_sp_det')
-    qsubcellfun(@sl03_sw_sp_det, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 60*60*24)
+    qsubcellfun(@sl03_sw_sp_det, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 60*60*24, 'queue', 'matlab')
   end
 end
 %---------------------------%
@@ -393,7 +395,7 @@ end
 if any(cfg.step ==  4)
   disp('running sl04_prepare_triggers')
   % sl04_prepare_triggers(cfgcell{1}, subjcell{1})
-  qsubcellfun(@sl04_prepare_triggers, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 60*60*24)
+  qsubcellfun(@sl04_prepare_triggers, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 60*60*24, 'queue', 'matlab')
 end
 %---------------------------%
 
@@ -403,7 +405,7 @@ end
 if any(cfg.step ==  5)
   disp('running sl05_divide_rec')
   % sl05_divide_rec(cfgcell{1}, subjcell{1})
-  qsubcellfun(@sl05_divide_rec, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 60*60*24)
+  qsubcellfun(@sl05_divide_rec, cfgcell, subjcell, 'memreq', 50*1024^2, 'timreq', 1*60*24, 'queue', 'matlab')
 end
 %---------------------------%
 
@@ -414,11 +416,11 @@ if any(cfg.step ==  6)
       numel(dir([cfg.clme 'f*'])) < 3  % folder is empty
     disp('running sl06_prepr_fmri')
     % sl06_prepr_fmri(cfgcell{1}, subjcell{1})
-    qsubcellfun(@sl06_prepr_fmri, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 60*60*24)
+    qsubcellfun(@sl06_prepr_fmri, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 60*60*24, 'queue', 'matlab')
   else
     disp('running sl06b_get_melodic')
     % sl06b_get_melodic(cfgcell{1}, subjcell{1})
-    qsubcellfun(@sl06b_get_melodic, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 60*60*24)
+    qsubcellfun(@sl06b_get_melodic, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 60*60*24, 'queue', 'matlab');
   end    
 end
 %---------------------------%
@@ -428,7 +430,7 @@ end
 % don't remove tdir for the moment, include parametric!
 if any(cfg.step ==  7)
   disp('running sl07_first_level')
-  % sl07_first_level(cfg, subjall(subj))
+  % sl07_first_level(cfgcell{1}, subjcell{1})
   qsubcellfun(@sl07_first_level, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 60*60*24, 'queue', 'matlab');
 end
 %---------------------------%
@@ -479,7 +481,7 @@ if strcmp(cfg.LCdf(1:3), 'ROI') || exist([cfg.dirB cfg.evtB(cfg.LCic).name files
   if any(cfg.step == 11)
     cd([cfg.scrp 'final/qsublog'])
     disp('running sl11_ppi_subj')
-    qsubcellfun(@sl11_ppisubj, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 60*60*24)
+    qsubcellfun(@sl11_ppisubj, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 8*60*60, 'queue', 'matlab')
   end
   %---------------------------%
   
