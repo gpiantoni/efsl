@@ -22,7 +22,6 @@ output = sprintf('%s (v%02.f) started at %s on %s\n', ...
 tic_t = tic;
 %---------------------------%
 
-addpath /data/toolbox/helpers/ % for mni2ba and count_unique
 output = sprintf('%s\n\n=======================================\nREPORT\n', output);
 
 %---------------------------%

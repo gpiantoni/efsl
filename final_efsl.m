@@ -52,6 +52,7 @@ if ~exist('crc_main')
   addpath([toolboxdir 'pppi_peak/PPPI/'])
   addpath([matlabroot filesep 'toolbox/stats/stats'])  % nanmean in spm8/fieldtrip is broken
   addpath([toolboxdir 'fieldtrip/qsub/'])
+  addpath([toolboxdir 'helpers'])
   
   spm_jobman('initcfg')
   fast = crc_cfg_fasst;
@@ -72,9 +73,9 @@ cfg.rslt = [cfg.anly 'spm/'];
 
 %-----------------%
 %-allow parallel computing, using bash
-subjall = 2; %[14 8 10 5 11 3 12 7 13 1 9 6 4 2];
-cfg.step = [4];
-HPC = false;
+subjall = [14 8 10 5 11 3 12 7 13 1 9 6 4 2];
+cfg.step = [4:13];
+HPC = true;
 %-----------------%
 
 %-----------------%
