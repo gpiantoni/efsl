@@ -46,11 +46,11 @@ cfg.scrp = [cfg.base 'scripts/'];
 
 if ~exist('crc_main')
   addpath([cfg.scrp 'final/'])
-  addpath([toolboxdir 'FASST/']) % <- works from sl03_sw_sp_det
+  addpath([toolboxdir 'FASST_111017/'])
   addpath([toolboxdir 'spm8/'])
   addpath(genpath([toolboxdir 'spm8/external/fieldtrip/']));
   addpath([toolboxdir 'pppi_peak/PPPI/'])
-  % addpath /usr/local/MATLAB/R2012b/toolbox/stats/stats/
+  addpath([matlabroot filesep 'toolbox/stats/stats'])  % nanmean in spm8/fieldtrip is broken
   addpath([toolboxdir 'fieldtrip/qsub/'])
   
   spm_jobman('initcfg')
@@ -72,8 +72,9 @@ cfg.rslt = [cfg.anly 'spm/'];
 
 %-----------------%
 %-allow parallel computing, using bash
-subjall = [14 8 10 5 11 3 12 7 13 1 9 6 4 2];
-cfg.step = [13];
+subjall = 2; %[14 8 10 5 11 3 12 7 13 1 9 6 4 2];
+cfg.step = [4];
+HPC = false;
 %-----------------%
 
 %-----------------%
@@ -113,7 +114,7 @@ cfg.spdr = '0'; % '0' or 'dur'
 cfg.SWest = 'swstream2'; % 'swstream2'; % or ''
 cfg.SWcla = 'mostsouth'; % 'mostsouth' or 'ytype_xylen' or 'beginend' or 'backup' (backup does no have RR)
 cfg.mintrvl = 0; % if 'backup', this should be 0
-cfg.else = 1; % 1 (f2b) or 2 (b2f) or  0;  if 'backup', this should be ''
+cfg.else = 2; % 1 (f2b) or 2 (b2f) or  0;  if 'backup', this should be ''
 
 cfg.offset = 'no'; % offset due to the rounding error introduced by FASST
 %-----------------%
@@ -359,7 +360,11 @@ end
 % it deletes subject dir!
 if any(cfg.step ==  1)
   disp('running sl01_getdata')
-  qsubcellfun(@sl01_getdata, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 60*60*24, 'queue', 'matlab')
+  if HPC
+    qsubcellfun(@sl01_getdata, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 60*60*24, 'queue', 'matlab')
+  else
+    sl01_getdata(cfgcell{1}, subjcell{1})
+  end
 end
 %---------------------------%
 
@@ -383,9 +388,12 @@ if any(cfg.step ==  3)
   if strcmp(cfg.SWcla, 'backup')
     warning('using backup markers: sl03_sw_sp_det is not necessary')
   else
-    
     disp('running sl03_sw_sp_det')
-    qsubcellfun(@sl03_sw_sp_det, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 60*60*24, 'queue', 'matlab')
+    if HPC
+      qsubcellfun(@sl03_sw_sp_det, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 60*60*24, 'queue', 'matlab')
+    else
+      sl03_sw_sp_det(cfgcell{1}, subjcell{1})
+    end
   end
 end
 %---------------------------%
@@ -394,8 +402,11 @@ end
 %-prepare triggers
 if any(cfg.step ==  4)
   disp('running sl04_prepare_triggers')
-  % sl04_prepare_triggers(cfgcell{1}, subjcell{1})
-  qsubcellfun(@sl04_prepare_triggers, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 60*60*24, 'queue', 'matlab')
+  if HPC
+    qsubcellfun(@sl04_prepare_triggers, cfgcell, subjcell, 'memreq', 10*1024^3, 'timreq', 60*60*24, 'queue', 'matlab')
+  else
+    sl04_prepare_triggers(cfgcell{1}, subjcell{1})
+  end
 end
 %---------------------------%
 
@@ -404,8 +415,11 @@ end
 % this should depend on prepare_triggers as well, one period w/out SW shouldn't be used
 if any(cfg.step ==  5)
   disp('running sl05_divide_rec')
-  % sl05_divide_rec(cfgcell{1}, subjcell{1})
-  qsubcellfun(@sl05_divide_rec, cfgcell, subjcell, 'memreq', 50*1024^2, 'timreq', 1*60*24, 'queue', 'matlab')
+  if HPC
+    qsubcellfun(@sl05_divide_rec, cfgcell, subjcell, 'memreq', 50*1024^3, 'timreq', 60*60*24, 'queue', 'matlab')
+  else
+    sl05_divide_rec(cfgcell{1}, subjcell{1})
+  end
 end
 %---------------------------%
 
@@ -415,12 +429,18 @@ if any(cfg.step ==  6)
   if ~cfg.melo || ...  % we don't care about melodic
       numel(dir([cfg.clme 'f*'])) < 3  % folder is empty
     disp('running sl06_prepr_fmri')
-    % sl06_prepr_fmri(cfgcell{1}, subjcell{1})
-    qsubcellfun(@sl06_prepr_fmri, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 60*60*24, 'queue', 'matlab')
+    if HPC 
+      qsubcellfun(@sl06_prepr_fmri, cfgcell, subjcell, 'memreq', 1*1024^3, 'timreq', 60*60*24, 'queue', 'matlab')
+    else
+      sl06_prepr_fmri(cfgcell{1}, subjcell{1})
+    end
   else
     disp('running sl06b_get_melodic')
-    % sl06b_get_melodic(cfgcell{1}, subjcell{1})
-    qsubcellfun(@sl06b_get_melodic, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 60*60*24, 'queue', 'matlab');
+    if HPC
+      qsubcellfun(@sl06b_get_melodic, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 60*60*24, 'queue', 'matlab');
+    else
+      sl06b_get_melodic(cfgcell{1}, subjcell{1})
+    end
   end    
 end
 %---------------------------%
@@ -430,8 +450,11 @@ end
 % don't remove tdir for the moment, include parametric!
 if any(cfg.step ==  7)
   disp('running sl07_first_level')
-  % sl07_first_level(cfgcell{1}, subjcell{1})
-  qsubcellfun(@sl07_first_level, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 60*60*24, 'queue', 'matlab');
+  if HPC
+    qsubcellfun(@sl07_first_level, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 60*60*24, 'queue', 'matlab');
+  else
+    sl07_first_level(cfgcell{1}, subjcell{1})
+  end
 end
 %---------------------------%
 %-------------------------------------%
@@ -481,7 +504,11 @@ if strcmp(cfg.LCdf(1:3), 'ROI') || exist([cfg.dirB cfg.evtB(cfg.LCic).name files
   if any(cfg.step == 11)
     cd([cfg.scrp 'final/qsublog'])
     disp('running sl11_ppi_subj')
-    qsubcellfun(@sl11_ppisubj, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 8*60*60, 'queue', 'matlab')
+    if HPC
+      qsubcellfun(@sl11_ppisubj, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 8*60*60, 'queue', 'matlab')
+    else
+      sl11_ppisubj(cfgcell{1}, subjcell{1})
+    end
   end
   %---------------------------%
   
