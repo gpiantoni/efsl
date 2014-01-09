@@ -106,6 +106,12 @@ for r = 1:numel(chks)
   load([edir chks(r).name])
   
   %-----------------%
+  %-fix path name
+  D.path = edir;
+  D.data.y.fname = [edir D.data.fnamedat];
+  %-----------------%
+  
+  %-----------------%
   %-measure R-R
   ECGchan = find(strcmp({D.channels.label}, 'ECG'));
   
