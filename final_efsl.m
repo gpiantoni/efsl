@@ -75,7 +75,7 @@ cfg.rslt = [cfg.anly 'spm/'];
 %-allow parallel computing, using bash
 subjall = [14 8 10 5 11 3 12 7 13 1 9 6 4 2];
 cfg.step = [4:13];
-HPC = true;
+HPC = 1;
 %-----------------%
 
 %-----------------%
@@ -115,7 +115,7 @@ cfg.spdr = '0'; % '0' or 'dur'
 cfg.SWest = 'swstream2'; % 'swstream2'; % or ''
 cfg.SWcla = 'mostsouth'; % 'mostsouth' or 'ytype_xylen' or 'beginend' or 'backup' (backup does no have RR)
 cfg.mintrvl = 0; % if 'backup', this should be 0
-cfg.else = 2; % 1 (f2b) or 2 (b2f) or  0;  if 'backup', this should be ''
+cfg.else = 0; % 1 (f2b) or 2 (b2f) or  0;  if 'backup', this should be ''
 
 cfg.offset = 'no'; % offset due to the rounding error introduced by FASST
 %-----------------%
@@ -362,7 +362,7 @@ end
 if any(cfg.step ==  1)
   disp('running sl01_getdata')
   if HPC
-    qsubcellfun(@sl01_getdata, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 60*60*24, 'queue', 'matlab')
+    qsubcellfun(@sl01_getdata, cfgcell, subjcell, 'memreq', [], 'timreq', [], 'queue', 'matlab')
   else
     sl01_getdata(cfgcell{1}, subjcell{1})
   end
@@ -377,7 +377,7 @@ if any(cfg.step ==  2) && 0
     warning('using backup markers: sl02_prepr_eeg is not necessary')
   else
     disp('running sl02_prepr_eeg')
-    qsubcellfun(@sl02_prepr_eeg, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 60*60*24, 'queue', 'matlab')
+    qsubcellfun(@sl02_prepr_eeg, cfgcell, subjcell, 'memreq', [], 'timreq', [], 'queue', 'matlab')
   end
   
 end
@@ -391,7 +391,7 @@ if any(cfg.step ==  3)
   else
     disp('running sl03_sw_sp_det')
     if HPC
-      qsubcellfun(@sl03_sw_sp_det, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 60*60*24, 'queue', 'matlab')
+      qsubcellfun(@sl03_sw_sp_det, cfgcell, subjcell, 'memreq', [], 'timreq', [], 'queue', 'matlab')
     else
       sl03_sw_sp_det(cfgcell{1}, subjcell{1})
     end
@@ -404,7 +404,7 @@ end
 if any(cfg.step ==  4)
   disp('running sl04_prepare_triggers')
   if HPC
-    qsubcellfun(@sl04_prepare_triggers, cfgcell, subjcell, 'memreq', 10*1024^3, 'timreq', 60*60*24, 'queue', 'matlab')
+    qsubcellfun(@sl04_prepare_triggers, cfgcell, subjcell, 'memreq', [], 'timreq', [], 'queue', 'matlab')
   else
     sl04_prepare_triggers(cfgcell{1}, subjcell{1})
   end
@@ -416,10 +416,12 @@ end
 % this should depend on prepare_triggers as well, one period w/out SW shouldn't be used
 if any(cfg.step ==  5)
   disp('running sl05_divide_rec')
-  if HPC
-    qsubcellfun(@sl05_divide_rec, cfgcell, subjcell, 'memreq', 50*1024^3, 'timreq', 60*60*24, 'queue', 'matlab')
+  if HPC && false  % sshfs is only mounted on the pc running matlab
+    qsubcellfun(@sl05_divide_rec, cfgcell, subjcell, 'memreq', [], 'timreq', [], 'queue', 'matlab')
   else
-    sl05_divide_rec(cfgcell{1}, subjcell{1})
+    for i = 1:numel(subjcell)
+      sl05_divide_rec(cfgcell{i}, subjcell{i})
+    end
   end
 end
 %---------------------------%
@@ -431,14 +433,14 @@ if any(cfg.step ==  6)
       numel(dir([cfg.clme 'f*'])) < 3  % folder is empty
     disp('running sl06_prepr_fmri')
     if HPC 
-      qsubcellfun(@sl06_prepr_fmri, cfgcell, subjcell, 'memreq', 1*1024^3, 'timreq', 60*60*24, 'queue', 'matlab')
+      qsubcellfun(@sl06_prepr_fmri, cfgcell, subjcell, 'memreq', [], 'timreq', [], 'queue', 'matlab')
     else
       sl06_prepr_fmri(cfgcell{1}, subjcell{1})
     end
   else
     disp('running sl06b_get_melodic')
     if HPC
-      qsubcellfun(@sl06b_get_melodic, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 60*60*24, 'queue', 'matlab');
+      qsubcellfun(@sl06b_get_melodic, cfgcell, subjcell, 'memreq', [], 'timreq', [], 'queue', 'matlab');
     else
       sl06b_get_melodic(cfgcell{1}, subjcell{1})
     end
@@ -452,7 +454,7 @@ end
 if any(cfg.step ==  7)
   disp('running sl07_first_level')
   if HPC
-    qsubcellfun(@sl07_first_level, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 60*60*24, 'queue', 'matlab');
+    qsubcellfun(@sl07_first_level, cfgcell, subjcell, 'memreq', [], 'timreq', [], 'queue', 'matlab');
   else
     sl07_first_level(cfgcell{1}, subjcell{1})
   end
@@ -506,7 +508,7 @@ if strcmp(cfg.LCdf(1:3), 'ROI') || exist([cfg.dirB cfg.evtB(cfg.LCic).name files
     cd([cfg.scrp 'final/qsublog'])
     disp('running sl11_ppi_subj')
     if HPC
-      qsubcellfun(@sl11_ppisubj, cfgcell, subjcell, 'memreq', 5*1024^3, 'timreq', 8*60*60, 'queue', 'matlab')
+      qsubcellfun(@sl11_ppisubj, cfgcell, subjcell, 'memreq', [], 'timreq', [], 'queue', 'matlab')
     else
       sl11_ppisubj(cfgcell{1}, subjcell{1})
     end
