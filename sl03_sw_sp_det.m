@@ -69,18 +69,18 @@ eegdat = sprintf('%s_%04.f_%s_sleep_2.mat', ...
 %-make chunks
 matlabbatch = [];
 
-matlabbatch{1}.fast.chunking.data = {[edir eegdat]};
+matlabbatch{1}.fasst.chunking.data = {[edir eegdat]};
 
 for c = 1:size(mkrS,1)
-  matlabbatch{1}.fast.chunking.chunk(c).chunk_beg.t_mark.m_type = mkrS(c,1);
-  matlabbatch{1}.fast.chunking.chunk(c).chunk_beg.t_mark.m_ind = 1;
-  matlabbatch{1}.fast.chunking.chunk(c).chunk_end.t_mark.m_type = mkrS(c,2);
-  matlabbatch{1}.fast.chunking.chunk(c).chunk_end.t_mark.m_ind = 1;
+  matlabbatch{1}.fasst.chunking.chunk(c).chunk_beg.t_mark.m_type = mkrS(c,1);
+  matlabbatch{1}.fasst.chunking.chunk(c).chunk_beg.t_mark.m_ind = 1;
+  matlabbatch{1}.fasst.chunking.chunk(c).chunk_end.t_mark.m_type = mkrS(c,2);
+  matlabbatch{1}.fasst.chunking.chunk(c).chunk_end.t_mark.m_ind = 1;
 end
 
-matlabbatch{1}.fast.chunking.options.overwr = 1;
-matlabbatch{1}.fast.chunking.options.fn_prefix = cfg.echk;
-matlabbatch{1}.fast.chunking.options.numchunk = 1;
+matlabbatch{1}.fasst.chunking.options.overwr = 1;
+matlabbatch{1}.fasst.chunking.options.fn_prefix = cfg.echk;
+matlabbatch{1}.fasst.chunking.options.numchunk = 1;
 
 spm_jobman('run', matlabbatch)
 
@@ -96,18 +96,18 @@ if  subj == 14 && any(outbound_mkr)
   %-------%
   matlabbatch = [];
   
-  matlabbatch{1}.fast.chunking.data = {[edir eegdat3]};
+  matlabbatch{1}.fasst.chunking.data = {[edir eegdat3]};
   
   for c = 1:size(mkrS,1)
-    matlabbatch{1}.fast.chunking.chunk(c).chunk_beg.t_mark.m_type = mkrS(c,1);
-    matlabbatch{1}.fast.chunking.chunk(c).chunk_beg.t_mark.m_ind = 1;
-    matlabbatch{1}.fast.chunking.chunk(c).chunk_end.t_mark.m_type = mkrS(c,2);
-    matlabbatch{1}.fast.chunking.chunk(c).chunk_end.t_mark.m_ind = 1;
+    matlabbatch{1}.fasst.chunking.chunk(c).chunk_beg.t_mark.m_type = mkrS(c,1);
+    matlabbatch{1}.fasst.chunking.chunk(c).chunk_beg.t_mark.m_ind = 1;
+    matlabbatch{1}.fasst.chunking.chunk(c).chunk_end.t_mark.m_type = mkrS(c,2);
+    matlabbatch{1}.fasst.chunking.chunk(c).chunk_end.t_mark.m_ind = 1;
   end
   
-  matlabbatch{1}.fast.chunking.options.overwr = 1;
-  matlabbatch{1}.fast.chunking.options.fn_prefix = cfg.echk;
-  matlabbatch{1}.fast.chunking.options.numchunk = numel(find(outbound_mkr == 0)) + 1; % start counting from the first chunk AFTER the chunks from the first EEG file
+  matlabbatch{1}.fasst.chunking.options.overwr = 1;
+  matlabbatch{1}.fasst.chunking.options.fn_prefix = cfg.echk;
+  matlabbatch{1}.fasst.chunking.options.numchunk = numel(find(outbound_mkr == 0)) + 1; % start counting from the first chunk AFTER the chunks from the first EEG file
   
   spm_jobman('run', matlabbatch)
   %-------%
@@ -132,16 +132,15 @@ for c = 1:size(mkr(subj).mkr,1)
   %-detect slow waves
   matlabbatch = [];
   
-  matlabbatch{1}.fast.sws.data = {chkdata};
+  matlabbatch{1}.fasst.wavedetect.sws.data = {chkdata};
   
-  matlabbatch{1}.fast.sws.sel.allf = true;
-  matlabbatch{1}.fast.sws.sco = 1;
-  matlabbatch{1}.fast.sws.reref = true;
-  matlabbatch{1}.fast.sws.filt.hpfilt = cfg.hpfilt;
-  matlabbatch{1}.fast.sws.filt.lpfilt = cfg.lpfilt;
-  matlabbatch{1}.fast.sws.roi.auto = true;
-  matlabbatch{1}.fast.sws.review.norev = true;
-  matlabbatch{1}.fast.sws.fmri.nfmri = true;
+  matlabbatch{1}.fasst.wavedetect.sws.sel.allf = true;
+  matlabbatch{1}.fasst.wavedetect.sws.reref = true;
+  matlabbatch{1}.fasst.wavedetect.sws.filt.hpfilt = cfg.hpfilt;
+  matlabbatch{1}.fasst.wavedetect.sws.filt.lpfilt = cfg.lpfilt;
+  matlabbatch{1}.fasst.wavedetect.sws.roi.auto = true;
+  matlabbatch{1}.fasst.wavedetect.sws.review.norev = true;
+  matlabbatch{1}.fasst.wavedetect.sws.fmri.nfmri = true;
   
   spm_jobman('run', matlabbatch)
   %-----------------%
