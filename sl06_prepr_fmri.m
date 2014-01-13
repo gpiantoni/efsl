@@ -60,13 +60,14 @@ allrdir = dir([rdir 'r*']); % rec folder
 
 for r = 1:numel(allrdir) % r01, r02 etc
   r0dir = [rdir allrdir(r).name filesep];
-  allfdir = dir([r0dir 'f*.img']);
+  allfdir = dir([r0dir 'f*.nii']);
   
   firstIMG(r).dir = r0dir;
   firstIMG(r).img = allfdir(1).name;
   
-  for f = 1:numel(allfdir)
-    fIMG{r}{f,1} = [r0dir allfdir(f).name ',1'];
+  n_vol = count_volumes_in_nii([r0dir allfdir(1).name]);
+  for f = 1:n_vol
+    fIMG{r}{f,1} = [r0dir allfdir(1).name ',' num2str(f)];
   end
   
 end
@@ -217,6 +218,7 @@ end
 %-----------------%
 
 if ~cfg.melo
+  
   %------------%
   %-Normalize functional
   matlabbatch = [];
@@ -237,19 +239,20 @@ if ~cfg.melo
   %-Output
   for r = 1:numel(allrdir) % r01, r02 etc
     r0dir = [rdir allrdir(r).name filesep];
-    allfdir = dir([r0dir 'wf*.img']);
+    allfdir = dir([r0dir 'wf*.nii']);
     
-    for f = 1:numel(allfdir)
-      wfIMG{r}{f,1} = [r0dir allfdir(f).name ',1'];
+    n_vol = count_volumes_in_nii([r0dir allfdir(1).name]);
+    for f = 1:n_vol
+      wfIMG{r}{f,1} = [r0dir allfdir(1).name ',' num2str(f)];
     end
+    
   end
   
   %-------%
   %-cleanup functional
-  cIMG = cat(1, fIMG{:});
-  for c = 1:numel(cIMG)
-    delete(  cIMG{c}(1:end-2))
-    delete([ cIMG{c}(1:end-5) 'hdr'])
+  for r = 1:numel(allrdir)
+    delete(fIMG{r}{1}(1:end-2))
+    delete([fIMG{r}{1}(1:end-5) 'mat'])
   end
   %------------%
 
@@ -270,10 +273,9 @@ if ~cfg.melo
 
   %-------%
   %-cleanup functional
-  cIMG = cat(1, wfIMG{:});
-  for c = 1:numel(cIMG)
-    delete(  cIMG{c}(1:end-2))
-    delete([ cIMG{c}(1:end-5) 'hdr'])
+  for r = 1:numel(allrdir)
+    delete(wfIMG{r}{1}(1:end-2))
+    delete([wfIMG{r}{1}(1:end-5) 'mat'])
   end
   %-------%
 end
@@ -299,3 +301,16 @@ fwrite(fid, output);
 fclose(fid);
 %-----------------%
 %---------------------------%
+
+function n_vol = count_volumes_in_nii(img_name)
+
+n_vol = bash(['fslinfo ' img_name ' | awk ''NR==5'' | awk ''{print $2}''']);
+n_vol = str2double(n_vol);
+
+function output = bash(command, cwd)
+
+if nargin == 1
+  [~, output] = system(['. ~/.bashrc; ' command]);
+else
+  [~, output] = system(['. ~/.bashrc; cd ' cwd ' ; ' command]);
+end

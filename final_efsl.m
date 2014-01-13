@@ -74,7 +74,7 @@ cfg.rslt = [cfg.anly 'spm/'];
 %-----------------%
 %-allow parallel computing, using bash
 subjall = [14 8 10 5 11 3 12 7 13 1 9 6 4 2];
-cfg.step = [4:13];
+cfg.step = [5:13];
 HPC = 1;
 %-----------------%
 

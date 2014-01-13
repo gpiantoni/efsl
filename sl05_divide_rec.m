@@ -106,6 +106,7 @@ for r = 1 : size( mkr(subj).mkr, 1)
     mkdir(sdir)
     
     scan = mkr(subj).mkr(r,1):mkr(subj).mkr(r,2);
+    all_img = cell(numel(scan), 1);
     
     for k = 1 : numel(scan)
       oldscan = scan(k);
@@ -127,21 +128,16 @@ for r = 1 : size( mkr(subj).mkr, 1)
         sesssubj = sessinfo(subj).sess;
       end
       
-      for e = 1 : 2 % img and hdr extensions
-        file1 = sprintf('%s%s_%04.f_fmri_sleep_s%01.fsc%04.f.%s', ...
-          fdir, cfg.code, subj, sesssubj, oldscan, ext{e});
-        file2 = sprintf('%sf%02.f-r%02.f-s%1.f-%04.f.%s', ...
-          sdir, subj, rcnt, cfg.smoo, scan(k), ext{e});
-        
-        if strcmp(ext{e}, 'hdr')
-          copyfile(file1, file2);
-          system(['chmod u+w ' file2]);
-        else
-          copyfile(file1, file2);
-        end
-      end
+      all_img{k} = sprintf('%s%s_%04.f_fmri_sleep_s%01.fsc%04.f.%s', ...
+        fdir, cfg.code, subj, sesssubj, oldscan, 'img');
       
     end
+    
+    
+    input_files = sprintf(' %s', all_img{:});
+    output_file = sprintf('%sf%02.f-r%02.f-s%1.f-%04.f-%04.f.%s', ...
+      sdir, subj, rcnt, cfg.smoo, scan(1), scan(end), 'nii');
+    bash(['fslmerge -t ' output_file ' ' input_files])
     
   else
     %-------%
@@ -171,3 +167,11 @@ fwrite(fid, output);
 fclose(fid);
 %-----------------%
 %---------------------------%
+
+function output = bash(command, cwd)
+
+if nargin == 1
+  [~, output] = system(['. ~/.bashrc; ' command]);
+else
+  [~, output] = system(['. ~/.bashrc; cd ' cwd ' ; ' command]);
+end
