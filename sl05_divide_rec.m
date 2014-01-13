@@ -134,10 +134,10 @@ for r = 1 : size( mkr(subj).mkr, 1)
           sdir, subj, rcnt, cfg.smoo, scan(k), ext{e});
         
         if strcmp(ext{e}, 'hdr')
-          system(['cp ' file1 ' ' file2]);
+          copyfile(file1, file2);
           system(['chmod u+w ' file2]);
         else
-          system(['ln ' file1 ' ' file2]);
+          copyfile(file1, file2);
         end
       end
       
