@@ -245,7 +245,6 @@ if ~cfg.melo
     for f = 1:n_vol
       wfIMG{r}{f,1} = [r0dir allfdir(1).name ',' num2str(f)];
     end
-    
   end
   
   %-------%
@@ -256,6 +255,17 @@ if ~cfg.melo
   end
   %------------%
 
+  %------------%
+  %-split in pieces because it's too large for some subjects
+  for r = 1:numel(wfIMG)
+    wfIMG_img{r} = spm_file_split(wfIMG{r}{1}(1:end-2));
+    delete(wfIMG{r}{1}(1:end-2))
+    
+    wfIMG{r} = [];
+    for i = 1:numel(wfIMG_img{r})
+      wfIMG{r}{i} = [wfIMG_img{r}(i).fname ',1'];
+    end
+  end
 
   %------------%
   %-Smooth
@@ -269,15 +279,35 @@ if ~cfg.melo
   matlabbatch{1}.spm.spatial.smooth.prefix = 's';
 
   spm_jobman('run', matlabbatch)
-  %------------%
-
+  
   %-------%
   %-cleanup functional
   for r = 1:numel(allrdir)
-    delete(wfIMG{r}{1}(1:end-2))
-    delete([wfIMG{r}{1}(1:end-5) 'mat'])
+    for f = 1:numel(wfIMG_img{r})
+      delete(wfIMG_img{r}(f).fname)
+    end
   end
-  %-------%
+  
+  %------%
+  %-Output (merge)
+  for r = 1:numel(allrdir) % r01, r02 etc
+    r0dir = [rdir allrdir(r).name filesep];
+    allfdir = dir([r0dir 'swf*.nii']);
+    
+    for f = 1:numel(allfdir)
+      swfIMG{r}{f,1} = [r0dir allfdir(f).name];
+    end
+    
+    swfIMG_4D = [swfIMG{r}{1}(1:end-10) '.nii'];
+    spm_file_merge(swfIMG{r}, swfIMG_4D);
+    
+    for f = 1:numel(swfIMG{r})
+      delete(swfIMG{r}{f})
+    end
+
+  end
+
+
 end
 
 %-------%

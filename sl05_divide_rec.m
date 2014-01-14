@@ -137,7 +137,7 @@ for r = 1 : size( mkr(subj).mkr, 1)
     input_files = sprintf(' %s', all_img{:});
     output_file = sprintf('%sf%02.f-r%02.f-s%1.f-%04.f-%04.f.%s', ...
       sdir, subj, rcnt, cfg.smoo, scan(1), scan(end), 'nii');
-    bash(['fslmerge -t ' output_file ' ' input_files])
+    bash(['fslmerge -t ' output_file ' ' input_files]);
     
   else
     %-------%
