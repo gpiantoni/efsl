@@ -65,7 +65,7 @@ for r = 1:numel(allrdir) % r01, r02 etc
   firstIMG(r).dir = r0dir;
   firstIMG(r).img = allfdir(1).name;
   
-  n_vol = count_volumes_in_nii([r0dir allfdir(1).name]);
+  n_vol = count_volumes_from_name([r0dir allfdir(1).name]);
   for f = 1:n_vol
     fIMG{r}{f,1} = [r0dir allfdir(1).name ',' num2str(f)];
   end
@@ -241,7 +241,7 @@ if ~cfg.melo
     r0dir = [rdir allrdir(r).name filesep];
     allfdir = dir([r0dir 'wf*.nii']);
     
-    n_vol = count_volumes_in_nii([r0dir allfdir(1).name]);
+    n_vol = count_volumes_from_name([r0dir allfdir(1).name]);
     for f = 1:n_vol
       wfIMG{r}{f,1} = [r0dir allfdir(1).name ',' num2str(f)];
     end
@@ -259,7 +259,7 @@ if ~cfg.melo
   %-split in pieces because it's too large for some subjects
   for r = 1:numel(wfIMG)
     wfIMG_img{r} = spm_file_split(wfIMG{r}{1}(1:end-2));
-    delete(wfIMG{r}{1}(1:end-2))
+    % delete(wfIMG{r}{1}(1:end-2))
     
     wfIMG{r} = [];
     for i = 1:numel(wfIMG_img{r})
@@ -267,11 +267,12 @@ if ~cfg.melo
     end
   end
 
+  tmpimg = [wfIMG{:}];
   %------------%
   %-Smooth
   matlabbatch = [];
 
-  matlabbatch{1}.spm.spatial.smooth.data = cat(1, wfIMG{:});
+  matlabbatch{1}.spm.spatial.smooth.data = cat(1, tmpimg(:));
 
   matlabbatch{1}.spm.spatial.smooth.fwhm = [1 1 1] * cfg.smoo;
   matlabbatch{1}.spm.spatial.smooth.dtype = 0;
@@ -331,6 +332,12 @@ fwrite(fid, output);
 fclose(fid);
 %-----------------%
 %---------------------------%
+
+function n_vol = count_volumes_from_name(img_name)
+
+firstvol = str2double(img_name(end-12:end-9));
+lastvol = str2double(img_name(end-7:end-4));
+n_vol = lastvol - firstvol + 1;  
 
 function n_vol = count_volumes_in_nii(img_name)
 

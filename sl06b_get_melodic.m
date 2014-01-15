@@ -25,6 +25,7 @@ rdir = sprintf([cfg.data '%04d/rec/'], subj);
 rsess = dir([rdir 'r*']);
 
 for i_r = 1:numel(rsess)
+  
   %-----------------%
   recdir = [rdir rsess(i_r).name filesep];
   meldir = [recdir 'melodic' filesep];
