@@ -51,16 +51,18 @@ for r = 1:numel(allrdir) % r01, r02 etc
   r0dir = [rdir allrdir(r).name filesep];
   allfdir = dir([r0dir 'swf*.nii']);
   
-  n_vol = count_volumes_in_nii([r0dir allfdir(1).name]);
+  n_vol = count_volumes_from_name([r0dir allfdir(1).name]);
   for f = 1:n_vol
     swfIMG{r}{f,1} = [r0dir allfdir(1).name ',' num2str(f)];
   end
+  
+  swfIMG_3D{r} = split_into_3D(swfIMG{r}{1});
+  swfIMG{r} = swfIMG_3D{r};
   
   % D has also regressed out any residual effects of movement using the
   % movement parameters from affine realignment of the volumes, don't do
   % any further realignment in SPM (and of course don't include motion
   % parameters in your stats model in SPM)
-  
   if ~cfg.melo
     allrp = dir([r0dir 'rp*.txt']);
     rp{r} = [r0dir allrp(1).name];
@@ -613,6 +615,12 @@ fwrite(fid, output);
 fclose(fid);
 %-----------------%
 %---------------------------%
+
+function n_vol = count_volumes_from_name(img_name)
+
+firstvol = str2double(img_name(end-12:end-9));
+lastvol = str2double(img_name(end-7:end-4));
+n_vol = lastvol - firstvol + 1;
 
 function n_vol = count_volumes_in_nii(img_name)
 

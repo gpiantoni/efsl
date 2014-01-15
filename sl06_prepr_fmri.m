@@ -254,38 +254,34 @@ if ~cfg.melo
     delete([fIMG{r}{1}(1:end-5) 'mat'])
   end
   %------------%
-
+  
   %------------%
   %-split in pieces because it's too large for some subjects
   for r = 1:numel(wfIMG)
-    wfIMG_img{r} = spm_file_split(wfIMG{r}{1}(1:end-2));
-    % delete(wfIMG{r}{1}(1:end-2))
-    
-    wfIMG{r} = [];
-    for i = 1:numel(wfIMG_img{r})
-      wfIMG{r}{i} = [wfIMG_img{r}(i).fname ',1'];
-    end
+    wfIMG_3D{r} = [];
+    wfIMG_3D{r} = split_into_3D(wfIMG{r}{1});
+    wfIMG{r} = wfIMG_3D{r};
   end
-
+  
   tmpimg = [wfIMG{:}];
   %------------%
   %-Smooth
   matlabbatch = [];
-
+  
   matlabbatch{1}.spm.spatial.smooth.data = cat(1, tmpimg(:));
-
+  
   matlabbatch{1}.spm.spatial.smooth.fwhm = [1 1 1] * cfg.smoo;
   matlabbatch{1}.spm.spatial.smooth.dtype = 0;
   matlabbatch{1}.spm.spatial.smooth.im = 0;
   matlabbatch{1}.spm.spatial.smooth.prefix = 's';
-
+  
   spm_jobman('run', matlabbatch)
   
   %-------%
   %-cleanup functional
   for r = 1:numel(allrdir)
-    for f = 1:numel(wfIMG_img{r})
-      delete(wfIMG_img{r}(f).fname)
+    for f = 1:numel(wfIMG{r})
+      delete(wfIMG{r}{f}(1:end-2))
     end
   end
   
@@ -299,16 +295,9 @@ if ~cfg.melo
       swfIMG{r}{f,1} = [r0dir allfdir(f).name];
     end
     
-    swfIMG_4D = [swfIMG{r}{1}(1:end-10) '.nii'];
-    spm_file_merge(swfIMG{r}, swfIMG_4D);
-    
-    for f = 1:numel(swfIMG{r})
-      delete(swfIMG{r}{f})
-    end
-
+    merge_into_4D(swfIMG{r});
   end
-
-
+  
 end
 
 %-------%
@@ -337,7 +326,7 @@ function n_vol = count_volumes_from_name(img_name)
 
 firstvol = str2double(img_name(end-12:end-9));
 lastvol = str2double(img_name(end-7:end-4));
-n_vol = lastvol - firstvol + 1;  
+n_vol = lastvol - firstvol + 1;
 
 function n_vol = count_volumes_in_nii(img_name)
 
