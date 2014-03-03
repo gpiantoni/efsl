@@ -66,6 +66,9 @@ spm defaults fmri
 %-------------------------------------%
 
 cfg.recd  = [cfg.base 'recordings/efsl/'];
+if ~isdir(cfg.recd)
+  error('There is no recording directory')
+end
 
 cfg.anly = [cfg.base 'analysis/'];
 cfg.mdir = [cfg.anly 'masks/'];
@@ -73,9 +76,9 @@ cfg.rslt = [cfg.anly 'spm/'];
 
 %-----------------%
 %-allow parallel computing, using bash
-subjall = 2; %[14 8 10 5 11 3 12 7 13 1 9 6 4 2];
-cfg.step = [7:13];
-HPC = 0;
+subjall = [14 8 10 5 11 3 12 7 13 1 9 6 4 2];
+cfg.step = 5; [4:13];
+HPC = 1;
 %-----------------%
 
 %-----------------%
