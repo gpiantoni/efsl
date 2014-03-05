@@ -126,20 +126,20 @@ for c = 1:size(mkr(subj).mkr,1)
   crc_SWS_detect(handles)
   %-----------------%
   
-  %-----------------%
-  %-detect spindles
-  matlabbatch = [];
-  
-  matlabbatch{1}.fasst.wavedetect.sp.data = {chkdata};
-  
-  matlabbatch{1}.fasst.wavedetect.sp.sel.allf = true;
-  matlabbatch{1}.fasst.wavedetect.sp.reref = true;
-  matlabbatch{1}.fasst.wavedetect.sp.filt.hpfilt = 11;
-  matlabbatch{1}.fasst.wavedetect.sp.filt.lpfilt = 20;
-  matlabbatch{1}.fasst.wavedetect.sp.review = false;
-  matlabbatch{1}.fasst.wavedetect.sp.wavlet = false;
-  spm_jobman('run', matlabbatch)
-  %-----------------%
+%   %-----------------%
+%   %-detect spindles
+%   matlabbatch = [];
+%   
+%   matlabbatch{1}.fasst.wavedetect.sp.data = {chkdata};
+%   
+%   matlabbatch{1}.fasst.wavedetect.sp.sel.allf = true;
+%   matlabbatch{1}.fasst.wavedetect.sp.reref = true;
+%   matlabbatch{1}.fasst.wavedetect.sp.filt.hpfilt = 11;
+%   matlabbatch{1}.fasst.wavedetect.sp.filt.lpfilt = 20;
+%   matlabbatch{1}.fasst.wavedetect.sp.review = false;
+%   matlabbatch{1}.fasst.wavedetect.sp.wavlet = false;
+%   spm_jobman('run', matlabbatch)
+%   %-----------------%
   
 end
 %---------------------------%
