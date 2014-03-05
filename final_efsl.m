@@ -445,7 +445,7 @@ if any(cfg.step ==  6)
     if HPC
       qsubcellfun(@sl06b_run_featfix, cfgcell, subjcell, 'memreq', [], 'timreq', [], 'queue', 'matlab');
     else
-      sl06b_run_melodic(cfgcell{1}, subjcell{1})
+      sl06b_run_featfix(cfgcell{1}, subjcell{1})
     end
   end    
 end
