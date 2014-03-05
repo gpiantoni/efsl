@@ -335,8 +335,14 @@ n_vol = str2double(n_vol);
 
 function output = bash(command, cwd)
 
+% Use system libraries
+MatlabPath = getenv('LD_LIBRARY_PATH');
+setenv('LD_LIBRARY_PATH', getenv('PATH'))
+
 if nargin == 1
   [~, output] = system(['. ~/.bashrc; ' command]);
 else
   [~, output] = system(['. ~/.bashrc; cd ' cwd ' ; ' command]);
 end
+
+setenv('LD_LIBRARY_PATH', MatlabPath)

@@ -67,13 +67,16 @@ for i_r = 1:numel(rsess)
 
   %-----------------%
   %-run feat
+  output = [output sprintf('feat started at %s\n', datestr(now, 'HH:MM:SS'))];
   bash(['feat ' design_fsf]);  
+  output = [output sprintf('feat ended at %s\n', datestr(now, 'HH:MM:SS'))];
   %-----------------%
   
   %-----------------%
   %-run fix
-  bash([cfg.fixd 'fix ' fix.feat ' ' cfg.fixd 
-    'training_files/Standard.RData ' num2str(cfg.ncmp)])
+  output = [output sprintf('fix started at %s\n', datestr(now, 'HH:MM:SS'))];
+  bash([cfg.fixd 'fix ' fixdir(1:end-1) ' ' cfg.fixd 'training_files/Standard.RData ' num2str(cfg.ncmp)])
+  output = [output sprintf('fix ended at %s\n', datestr(now, 'HH:MM:SS'))];
   %-----------------%
 
   %-----------------%
