@@ -77,7 +77,7 @@ cfg.rslt = [cfg.anly 'spm/'];
 %-----------------%
 %-allow parallel computing, using bash
 subjall = [14 8 10 5 11 3 12 7 13 1 9 6 4 2];
-cfg.step = [4:13];
+cfg.step = 5:6; [4:13];
 HPC = 1;
 %-----------------%
 
@@ -132,12 +132,11 @@ cfg.smoo = 4; % <- bc names change depending on smoothing (although smoothing is
 
 %-----------------%
 %-cfg sl06_prepr_fmri
-cfg.melo = false;
+cfg.melo = true;
 %-----------------%
 
 %-----------------%
-%-cfg sl06b_get_melodic
-cfg.clme = [cfg.anly 'melodic_feat/clean/'];
+%-cfg sl06b_fun_featfix
 cfg.tfsf = [cfg.scrp 'final/private/template.fsf'];  % template fsf
 cfg.fixd = [toolboxdir 'fix1.06' filesep];
 cfg.ncmp = 20; % number of components
@@ -442,9 +441,9 @@ if any(cfg.step ==  6)
       sl06_prepr_fmri(cfgcell{1}, subjcell{1})
     end
   if cfg.melo
-     disp('running sl06b_get_melodic')
+     disp('running sl06b_run_featfix')
     if HPC
-      qsubcellfun(@sl06b_run_melodic, cfgcell, subjcell, 'memreq', [], 'timreq', [], 'queue', 'matlab');
+      qsubcellfun(@sl06b_run_featfix, cfgcell, subjcell, 'memreq', [], 'timreq', [], 'queue', 'matlab');
     else
       sl06b_run_melodic(cfgcell{1}, subjcell{1})
     end

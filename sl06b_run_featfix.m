@@ -1,7 +1,7 @@
-function sl06b_run_melodic(cfg, subj)
-%SLEEPLIEGE 06B: run Melodic to clean up fMRI
+function sl06b_run_featfix(cfg, subj)
+%SLEEPLIEGE 06B: run featfix to clean up fMRI
 
-mversion = 2;
+mversion = 3;
 
 %-----------------%
 %-input
@@ -16,8 +16,6 @@ output = sprintf('(p%02.f) %s (v%02.f) started at %s on %s\n', ...
   subj, mfilename,  mversion, datestr(now, 'HH:MM:SS'), datestr(now, 'dd-mmm-yy'));
 tic_t = tic;
 %---------------------------%
-
-melodic_options = ' -o melodic/ --report --tr=2.46 --logPower --Oall -v';
 
 %---------------------------%
 %-loop over recordings

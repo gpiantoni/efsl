@@ -217,43 +217,43 @@ else
 end
 %-----------------%
 
-%------------%
-%-Normalize functional
-matlabbatch = [];
-
-matlabbatch{1}.spm.spatial.normalise.write.subj.matname = {seg_sn};
-matlabbatch{1}.spm.spatial.normalise.write.subj.resample = cat(1, fIMG{:}); % concatenate images
-matlabbatch{1}.spm.spatial.normalise.write.roptions.preserve = 0;
-matlabbatch{1}.spm.spatial.normalise.write.roptions.bb = [-78 -112 -50
-  78 76 85];
-matlabbatch{1}.spm.spatial.normalise.write.roptions.vox = [2 2 2]; % <- only difference with structural
-matlabbatch{1}.spm.spatial.normalise.write.roptions.interp = 3;
-matlabbatch{1}.spm.spatial.normalise.write.roptions.wrap = [0 0 0];
-matlabbatch{1}.spm.spatial.normalise.write.roptions.prefix = 'w';
-
-spm_jobman('run', matlabbatch)
-
-%------%
-%-Output
-for r = 1:numel(allrdir) % r01, r02 etc
-  r0dir = [rdir allrdir(r).name filesep];
-  allfdir = dir([r0dir 'wf*.nii']);
-  
-  n_vol = count_volumes_from_name([r0dir allfdir(1).name]);
-  for f = 1:n_vol
-    wfIMG{r}{f,1} = [r0dir allfdir(1).name ',' num2str(f)];
-  end
-end
-
-%-------%
-%-cleanup functional
-for r = 1:numel(allrdir)
-  delete(fIMG{r}{1}(1:end-2))
-  delete([fIMG{r}{1}(1:end-5) 'mat'])
-end
-%------------%
-
 if ~cfg.melo  
+
+  %------------%
+  %-Normalize functional
+  matlabbatch = [];
+
+  matlabbatch{1}.spm.spatial.normalise.write.subj.matname = {seg_sn};
+  matlabbatch{1}.spm.spatial.normalise.write.subj.resample = cat(1, fIMG{:}); % concatenate images
+  matlabbatch{1}.spm.spatial.normalise.write.roptions.preserve = 0;
+  matlabbatch{1}.spm.spatial.normalise.write.roptions.bb = [-78 -112 -50
+    78 76 85];
+  matlabbatch{1}.spm.spatial.normalise.write.roptions.vox = [2 2 2]; % <- only difference with structural
+  matlabbatch{1}.spm.spatial.normalise.write.roptions.interp = 3;
+  matlabbatch{1}.spm.spatial.normalise.write.roptions.wrap = [0 0 0];
+  matlabbatch{1}.spm.spatial.normalise.write.roptions.prefix = 'w';
+
+  spm_jobman('run', matlabbatch)
+
+  %------%
+  %-Output
+  for r = 1:numel(allrdir) % r01, r02 etc
+    r0dir = [rdir allrdir(r).name filesep];
+    allfdir = dir([r0dir 'wf*.nii']);
+
+    n_vol = count_volumes_from_name([r0dir allfdir(1).name]);
+    for f = 1:n_vol
+      wfIMG{r}{f,1} = [r0dir allfdir(1).name ',' num2str(f)];
+    end
+  end
+
+  %-------%
+  %-cleanup functional
+  for r = 1:numel(allrdir)
+    delete(fIMG{r}{1}(1:end-2))
+    delete([fIMG{r}{1}(1:end-5) 'mat'])
+  end
+  %------------%
   
   %------------%
   %-split in pieces because it's too large for some subjects
