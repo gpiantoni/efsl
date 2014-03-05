@@ -64,22 +64,14 @@ eegdat = sprintf('%s_%04.f_%s_sleep_2.mat', ...
 
 %---------------------------%
 %-make chunks
-matlabbatch = [];
-
-matlabbatch{1}.fasst.chunking.data = {[edir eegdat]};
-
+opt = [];
+opt.eeg_file = [edir eegdat];
 for c = 1:size(mkrS,1)
-  matlabbatch{1}.fasst.chunking.chunk(c).chunk_beg.t_mark.m_type = mkrS(c,1);
-  matlabbatch{1}.fasst.chunking.chunk(c).chunk_beg.t_mark.m_ind = 1;
-  matlabbatch{1}.fasst.chunking.chunk(c).chunk_end.t_mark.m_type = mkrS(c,2);
-  matlabbatch{1}.fasst.chunking.chunk(c).chunk_end.t_mark.m_ind = 1;
+  opt.idx_chk = c;
+  opt.begmark = mkrS(c,1);
+  opt.endmark = mkrS(c,2);
+  crc_chunks_no_gui(opt)
 end
-
-matlabbatch{1}.fasst.chunking.options.overwr = 1;
-matlabbatch{1}.fasst.chunking.options.fn_prefix = cfg.echk;
-matlabbatch{1}.fasst.chunking.options.numchunk = 1;
-
-spm_jobman('run', matlabbatch)
 
 %-----------------%
 %-subject 14 has two sessions in EEG (this is the second)
@@ -91,23 +83,16 @@ if  subj == 14 && any(outbound_mkr)
   mkrS = mkr(subj).mkr( outbound_mkr, :);
   
   %-------%
-  matlabbatch = [];
-  
-  matlabbatch{1}.fasst.chunking.data = {[edir eegdat3]};
-  
+  opt = [];
+  opt.eeg_file = [edir eegdat3];
   for c = 1:size(mkrS,1)
-    matlabbatch{1}.fasst.chunking.chunk(c).chunk_beg.t_mark.m_type = mkrS(c,1);
-    matlabbatch{1}.fasst.chunking.chunk(c).chunk_beg.t_mark.m_ind = 1;
-    matlabbatch{1}.fasst.chunking.chunk(c).chunk_end.t_mark.m_type = mkrS(c,2);
-    matlabbatch{1}.fasst.chunking.chunk(c).chunk_end.t_mark.m_ind = 1;
+    opt.idx_chk = c + numel(find(outbound_mkr == 0));
+    opt.begmark = mkrS(c,1);
+    opt.endmark = mkrS(c,2);
+    crc_chunks_no_gui(opt)
   end
-  
-  matlabbatch{1}.fasst.chunking.options.overwr = 1;
-  matlabbatch{1}.fasst.chunking.options.fn_prefix = cfg.echk;
-  matlabbatch{1}.fasst.chunking.options.numchunk = numel(find(outbound_mkr == 0)) + 1; % start counting from the first chunk AFTER the chunks from the first EEG file
-  
-  spm_jobman('run', matlabbatch)
   %-------%
+  
 end
 %-----------------%
 %---------------------------%
