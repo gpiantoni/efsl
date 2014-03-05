@@ -13,7 +13,7 @@ mversion = 9;
 %01 11/01/14 created
 
 spm_jobman('initcfg');
-fast = crc_cfg_fast;
+fast = crc_cfg_fasst;
 cfg_util('addapp', fast)
 
 %-----------------%
