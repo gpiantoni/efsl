@@ -46,7 +46,7 @@ cfg.scrp = [cfg.base 'scripts/'];
 
 if ~exist('crc_main')
   addpath([cfg.scrp 'final/'])
-  addpath([toolboxdir 'FASST_111017/'])
+  addpath([toolboxdir 'FAST/'])
   addpath([toolboxdir 'spm8/'])
   addpath(genpath([toolboxdir 'spm8/external/fieldtrip/']));
   addpath([toolboxdir 'pppi_peak/PPPI/'])
@@ -55,7 +55,7 @@ if ~exist('crc_main')
   addpath([toolboxdir 'helpers'])
   
   spm_jobman('initcfg')
-  fast = crc_cfg_fasst;
+  fast = crc_cfg_fast;
   cfg_util('addapp', fast)
 end
 spm defaults fmri
