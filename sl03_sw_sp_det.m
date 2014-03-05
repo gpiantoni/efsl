@@ -69,18 +69,18 @@ eegdat = sprintf('%s_%04.f_%s_sleep_2.mat', ...
 %-make chunks
 matlabbatch = [];
 
-matlabbatch{1}.fast.chunking.data = {[edir eegdat]};
+matlabbatch{1}.fasst.chunking.data = {[edir eegdat]};
 
 for c = 1:size(mkrS,1)
-  matlabbatch{1}.fast.chunking.chunk(c).chunk_beg.t_mark.m_type = mkrS(c,1);
-  matlabbatch{1}.fast.chunking.chunk(c).chunk_beg.t_mark.m_ind = 1;
-  matlabbatch{1}.fast.chunking.chunk(c).chunk_end.t_mark.m_type = mkrS(c,2);
-  matlabbatch{1}.fast.chunking.chunk(c).chunk_end.t_mark.m_ind = 1;
+  matlabbatch{1}.fasst.chunking.chunk(c).chunk_beg.t_mark.m_type = mkrS(c,1);
+  matlabbatch{1}.fasst.chunking.chunk(c).chunk_beg.t_mark.m_ind = 1;
+  matlabbatch{1}.fasst.chunking.chunk(c).chunk_end.t_mark.m_type = mkrS(c,2);
+  matlabbatch{1}.fasst.chunking.chunk(c).chunk_end.t_mark.m_ind = 1;
 end
 
-matlabbatch{1}.fast.chunking.options.overwr = 1;
-matlabbatch{1}.fast.chunking.options.fn_prefix = cfg.echk;
-matlabbatch{1}.fast.chunking.options.numchunk = 1;
+matlabbatch{1}.fasst.chunking.options.overwr = 1;
+matlabbatch{1}.fasst.chunking.options.fn_prefix = cfg.echk;
+matlabbatch{1}.fasst.chunking.options.numchunk = 1;
 
 spm_jobman('run', matlabbatch)
 

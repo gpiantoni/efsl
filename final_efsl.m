@@ -46,7 +46,7 @@ cfg.scrp = [cfg.base 'scripts/'];
 
 if ~exist('crc_main')
   addpath([cfg.scrp 'final/'])
-  addpath([toolboxdir 'FAST/'])
+  addpath([toolboxdir 'FASST_111017/'])
   addpath([toolboxdir 'spm8/'])
   addpath(genpath([toolboxdir 'spm8/external/fieldtrip/']));
   addpath([toolboxdir 'pppi_peak/PPPI/'])
@@ -55,7 +55,7 @@ if ~exist('crc_main')
   addpath([toolboxdir 'helpers'])
   
   spm_jobman('initcfg')
-  fast = crc_cfg_fast;
+  fast = crc_cfg_fasst;
   cfg_util('addapp', fast)
 end
 spm defaults fmri
@@ -76,9 +76,9 @@ cfg.rslt = [cfg.anly 'spm/'];
 
 %-----------------%
 %-allow parallel computing, using bash
-subjall = [14 8 10 5 11 3 12 7 13 1 9 6 4 2];
-cfg.step = 5:6; [4:13];
-HPC = 1;
+subjall = 2; [14 8 10 5 11 3 12 7 13 1 9 6 4 2];
+cfg.step = 3; [4:13];
+HPC = 0;
 %-----------------%
 
 %-----------------%
