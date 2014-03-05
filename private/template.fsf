@@ -241,7 +241,7 @@ set fmri(reghighres_yn) 1
 set fmri(reghighres_search) 90
 
 # Degrees of Freedom for registration to main structural
-set fmri(reghighres_dof) 6
+set fmri(reghighres_dof) BBR
 
 # Registration to standard image?
 set fmri(regstandard_yn) 1
