@@ -1,7 +1,8 @@
 function sl03_sw_sp_det(cfg, subj)
 %SLEEPLIEGE 03: Slow wave, spindle detection
 
-mversion = 9;
+mversion = 10;
+%10 14/03/05 use subset of functions of fast
 %09 11/09/28 change filter properties to detect sw
 %08 11/09/09 2nd argument for subj (and cfg.subj -> subj)
 %07 11/07/28 get the right name
@@ -11,10 +12,6 @@ mversion = 9;
 %03 11/02/07 no for subj
 %02 11/01/16 using matlab batch (instead of scripting)
 %01 11/01/14 created
-
-spm_jobman('initcfg');
-fast = crc_cfg_fasst;
-cfg_util('addapp', fast)
 
 %-----------------%
 %-input
@@ -130,19 +127,18 @@ for c = 1:size(mkr(subj).mkr,1)
   
   %-----------------%
   %-detect slow waves
-  matlabbatch = [];
+  handles = [];
+  handles.fname = chkdata;
+  handles.highfc = cfg.hpfilt;
+  handles.lowfc = cfg.lpfilt;
+ 
+  handles.analyse = 2;  % whole file
+  handles.fmri = false;
+  handles.reref = true;
+  handles.roisel = true;
+  handles.review = false;
   
-  matlabbatch{1}.fasst.wavedetect.sws.data = {chkdata};
-  
-  matlabbatch{1}.fasst.wavedetect.sws.sel.allf = true;
-  matlabbatch{1}.fasst.wavedetect.sws.reref = true;
-  matlabbatch{1}.fasst.wavedetect.sws.filt.hpfilt = cfg.hpfilt;
-  matlabbatch{1}.fasst.wavedetect.sws.filt.lpfilt = cfg.lpfilt;
-  matlabbatch{1}.fasst.wavedetect.sws.roi.auto = true;
-  matlabbatch{1}.fasst.wavedetect.sws.review.norev = true;
-  matlabbatch{1}.fasst.wavedetect.sws.fmri.nfmri = true;
-  
-  spm_jobman('run', matlabbatch)
+  crc_SWS_detect(handles)
   %-----------------%
   
   %-----------------%
