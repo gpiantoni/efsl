@@ -124,22 +124,32 @@ for c = 1:size(mkr(subj).mkr,1)
   handles.review = false;
   
   crc_SWS_detect(handles)
+  
+  %------%
+  %-correct where SWS is stored
+  load(chkdata, 'D')
+  D.other.CRC.SW.SW = D.other.SW;
+  D.other.CRC.SW.origin_count = D.other.origin_count;
+  D.other.CRC.SW.DATA4ROI = D.other.DATA4ROI;
+  D.other = rmfield(D.other, {'SW', 'origin_count', 'DATA4ROI'});
+  save(chkdata, 'D')
+  %------%
   %-----------------%
   
-%   %-----------------%
-%   %-detect spindles
-%   matlabbatch = [];
-%   
-%   matlabbatch{1}.fasst.wavedetect.sp.data = {chkdata};
-%   
-%   matlabbatch{1}.fasst.wavedetect.sp.sel.allf = true;
-%   matlabbatch{1}.fasst.wavedetect.sp.reref = true;
-%   matlabbatch{1}.fasst.wavedetect.sp.filt.hpfilt = 11;
-%   matlabbatch{1}.fasst.wavedetect.sp.filt.lpfilt = 20;
-%   matlabbatch{1}.fasst.wavedetect.sp.review = false;
-%   matlabbatch{1}.fasst.wavedetect.sp.wavlet = false;
-%   spm_jobman('run', matlabbatch)
-%   %-----------------%
+  %-----------------%
+  %-detect spindles
+  handles = [];
+  handles.fname = chkdata;
+  handles.highfc = 11;
+  handles.lowfc = 20;
+ 
+  handles.analyse = 2;  % whole file
+
+  handles.reref = true;
+  handles.review = false;
+  
+  crc_SP_detect(handles)
+  %-----------------%
   
 end
 %---------------------------%

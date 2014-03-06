@@ -87,7 +87,8 @@ end
 close all
 XV=struct(Dss);
 
-def=crc_defaults('swsd');
+def=crc_get_defaults();  % GP
+def.swsd.param1 = def.swsd;  % GP
 csw=[];
 start=0;
 %extract periods of interest
