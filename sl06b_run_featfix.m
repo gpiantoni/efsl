@@ -44,7 +44,7 @@ for i_r = 1:numel(rsess)
   fsf = strrep(template, 'XXX_outputdir', fixdir(1:end-6));
   fsf = strrep(fsf, 'XXX_smooth', num2str(cfg.smoo));
 
-  pattern = dir([recdir sprintf('wf%02d-r%02d-s*-*-*.nii', subj, i_r)]);
+  pattern = dir([recdir sprintf('f%02d-r%02d-s*-*-*.nii', subj, i_r)]);
   dirty_fmri = [recdir pattern(1).name];
 
   [dirname, filename, ext] = fileparts(dirty_fmri);
@@ -79,7 +79,7 @@ for i_r = 1:numel(rsess)
 
   %-----------------%
   %-
-  clean_fmri = [fixdir '.feat' filesep 'filtered_func_data_clean.nii.gz'];
+  clean_fmri = [fixdir 'filtered_func_data_clean.nii.gz'];
   ready_fmri = fullfile(dirname, ['s' filename, ext]);
   copyfile(clean_fmri, ready_fmri)
   %-----------------%

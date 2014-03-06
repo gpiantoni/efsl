@@ -77,7 +77,7 @@ cfg.rslt = [cfg.anly 'spm/'];
 %-----------------%
 %-allow parallel computing, using bash
 subjall = [14 8 10 5 11 3 12 7 13 1 9 6 4 2];
-cfg.step = 5:6; [4:13];
+cfg.step = 6; [4:13];
 HPC = 1;
 %-----------------%
 
@@ -436,9 +436,9 @@ end
 if any(cfg.step ==  6)
    disp('running sl06_prepr_fmri')
     if HPC 
-      qsubcellfun(@sl06_prepr_fmri, cfgcell, subjcell, 'memreq', [], 'timreq', [], 'queue', 'matlab')
+      % qsubcellfun(@sl06_prepr_fmri, cfgcell, subjcell, 'memreq', [], 'timreq', [], 'queue', 'matlab')
     else
-      sl06_prepr_fmri(cfgcell{1}, subjcell{1})
+      % sl06_prepr_fmri(cfgcell{1}, subjcell{1})
     end
   if cfg.melo
      disp('running sl06b_run_featfix')
