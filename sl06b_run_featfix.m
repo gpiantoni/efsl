@@ -80,8 +80,11 @@ for i_r = 1:numel(rsess)
   %-----------------%
   %-
   clean_fmri = [fixdir 'filtered_func_data_clean.nii.gz'];
-  ready_fmri = fullfile(dirname, ['s' filename, ext]);
+  ready_fmri = fullfile(dirname, ['s' filename, '.nii.gz']);
   copyfile(clean_fmri, ready_fmri)
+  
+  gunzip(ready_fmri)
+  delete(ready_fmri)
   %-----------------%
     
 end
