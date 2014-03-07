@@ -43,13 +43,21 @@ sdir = sprintf('%s%s/spm/', cfg.data, ndir);
 
 %------%
 %-swf img
+
+%-use swf (spm-only pipeline) or wsf (feat/fix pipeline)
+if cfg.melo
+  preproc = 'wsf';
+else
+  preproc = 'swf';
+end  
+
 allrdir = dir([rdir 'r*']); % rec folder
 
 clear swfIMG rp
 
 for r = 1:numel(allrdir) % r01, r02 etc
   r0dir = [rdir allrdir(r).name filesep];
-  allfdir = dir([r0dir 'swf*.nii']);
+  allfdir = dir([r0dir preproc '*.nii']);
   
   n_vol = count_volumes_from_name([r0dir allfdir(1).name]);
   for f = 1:n_vol
