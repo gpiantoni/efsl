@@ -95,6 +95,7 @@ if handles.analyse==3
         end
     end
 elseif handles.analyse==2
+     Dor.CRC.score{1} = 2 * ones(1, numel(Dor.CRC.score{1})); % GP use all file
     [D,TPOI]=crc_extractSW_v2(Dor,handles.analyse,crcdef.stagesp,scorer,0);
 else
     [D,cleanSW]=crc_extractSW(Dor,handles.analyse, crcdef.stagesp,scorer,0);
