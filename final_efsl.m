@@ -77,7 +77,7 @@ cfg.rslt = [cfg.anly 'spm/'];
 %-----------------%
 %-allow parallel computing, using bash
 subjall = [14 8 10 5 11 3 12 7 13 1 9 6 4 2];
-cfg.step = 6; [4:13];
+cfg.step = 5:6; [4:13];
 HPC = 1;
 %-----------------%
 
@@ -155,6 +155,7 @@ cfg.basopt = [10 5];
 cfg.volt = 1; % fd1 = no, 2 = yes (big problem if you include it, because there are not enough scans for some subjects!)
 cfg.heart = 'yes';
 cfg.wcon = 'no'; % yes or no (weight the contrasts for each session based on number of slow waves)
+cfg.cvrp = true; % use movement parameters as covariate (don't use if you run melo)
 
 %-------%
 %-contrasts to collect (only use one, otherwise it's not correct)
@@ -436,9 +437,9 @@ end
 if any(cfg.step ==  6)
    disp('running sl06_prepr_fmri')
     if HPC 
-      % qsubcellfun(@sl06_prepr_fmri, cfgcell, subjcell, 'memreq', [], 'timreq', [], 'queue', 'matlab')
+      qsubcellfun(@sl06_prepr_fmri, cfgcell, subjcell, 'memreq', [], 'timreq', [], 'queue', 'matlab')
     else
-      % sl06_prepr_fmri(cfgcell{1}, subjcell{1})
+      sl06_prepr_fmri(cfgcell{1}, subjcell{1})
     end
   if cfg.melo
      disp('running sl06b_run_featfix')
@@ -446,6 +447,10 @@ if any(cfg.step ==  6)
       qsubcellfun(@sl06b_run_featfix, cfgcell, subjcell, 'memreq', [], 'timreq', [], 'queue', 'matlab');
     else
       sl06b_run_featfix(cfgcell{1}, subjcell{1})
+    end
+    
+    for i = 1:numel(subjcell)
+      sl06c_realign(cfgcell{i}, subjcell{i})
     end
   end    
 end

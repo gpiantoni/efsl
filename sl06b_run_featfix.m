@@ -78,7 +78,7 @@ for i_r = 1:numel(rsess)
   %-----------------%
 
   %-----------------%
-  %-
+  %-move file as unzipped to main folder
   clean_fmri = [fixdir 'filtered_func_data_clean.nii.gz'];
   ready_fmri = fullfile(dirname, ['s' filename, '.nii.gz']);
   copyfile(clean_fmri, ready_fmri)

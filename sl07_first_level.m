@@ -63,7 +63,7 @@ for r = 1:numel(allrdir) % r01, r02 etc
   % movement parameters from affine realignment of the volumes, don't do
   % any further realignment in SPM (and of course don't include motion
   % parameters in your stats model in SPM)
-  if ~cfg.melo
+  if cfg.cvrp
     allrp = dir([r0dir 'rp*.txt']);
     rp{r} = [r0dir allrp(1).name];
   end
@@ -173,7 +173,7 @@ if strfind(cfg.AorB, 'A')
       end
       
       matlabbatch{1}.spm.stats.fmri_spec.sess(rcnt).multi = {''};
-      if ~cfg.melo
+      if cfg.cvrp
          matlabbatch{1}.spm.stats.fmri_spec.sess(rcnt).multi_reg = rp(rcnt);
       end
       matlabbatch{1}.spm.stats.fmri_spec.sess(rcnt).hpf = 128;
@@ -439,7 +439,7 @@ if strfind(cfg.AorB, 'B')
       end
       
       matlabbatch{1}.spm.stats.fmri_spec.sess(rcnt).multi = {''};
-      if ~cfg.melo
+      if cfg.cvrp
         matlabbatch{1}.spm.stats.fmri_spec.sess(rcnt).multi_reg = rp(rcnt);
       end
       matlabbatch{1}.spm.stats.fmri_spec.sess(rcnt).hpf = 128;
