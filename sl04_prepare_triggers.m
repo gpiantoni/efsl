@@ -115,7 +115,7 @@ for r = 1:numel(chks)
   %-measure R-R
   ECGchan = find(strcmp({D.channels.label}, 'ECG'));
   
-  peaks = fmrib_qrsdetect(meeg(D), ECGchan, 0); % Detect peaks, in samples over recording
+  peaks = fmrib_qrsdetect(D, ECGchan, 0); % Detect peaks, in samples over recording
   
   heart  = zeros(1, D.Nsamples);
   heart(peaks) = [diff(peaks/D.Fsample) 1]; % if an R was present in a particular sample
@@ -177,15 +177,14 @@ for r = 1:numel(chks)
   %-------%
   %-----------------%
   
-  D = meeg(D);
-  if isfield(D.CRC, 'SW')
-    for w = 1:numel(D.CRC.SW.SW)
-      SW_onset{r}(w,1) = D.CRC.SW.SW(w).negmax_tp / fsample(D) - offset;
+  if isfield(D.other.CRC, 'SW')
+    for w = 1:numel(D.other.CRC.SW.SW)
+      SW_onset{r}(w,1) = D.other.CRC.SW.SW(w).negmax_tp / D.Fsample - offset;
       
       if strcmp(cfg.swdr, '0')
         SW_dur{r}(w,1)   = 0;
       elseif strcmp(cfg.swdr, 'range')
-        SW_dur{r}(w,1)   = range(D.CRC.SW.SW(w).delays)/ 1000; % convert ms -> s
+        SW_dur{r}(w,1)   = range(D.other.CRC.SW.SW(w).delays)/ 1000; % convert ms -> s
       end
       
     end
@@ -195,12 +194,12 @@ for r = 1:numel(chks)
     SW_dur{r} = [];
   end
   
-  if isfield(D.CRC, 'spindles')
-    SP_onset{r}(:,1)= D.CRC.spindles.bounds(:,1) / fsample(D) - offset;
+  if isfield(D.other.CRC, 'spindles')
+    SP_onset{r}(:,1)= D.other.CRC.spindles.bounds(:,1) / D.Fsample - offset;
     if strcmp(cfg.spdr, '0');
       SP_dur{r}       = zeros(size(SP_onset{r}));
     elseif strcmp(cfg.spdr, 'dur');
-      SP_dur{r}       = D.CRC.spindles.duration / 1000; % convert ms -> s
+      SP_dur{r}       = D.other.CRC.spindles.duration / 1000; % convert ms -> s
     end
   else
     disp(['for subj ' num2str(subj) ' chunk ' num2str(r) ' doesn''t have spindles'])
@@ -240,7 +239,7 @@ if ~isempty(cfg.SWest)
     %-----------------%
     %-classify SW
     load([edir chks(r).name])
-    D = meeg(D);
+    % D = meeg(D);
     [SWtype, SWparam] = classify_SW(cfg, D);
     %-----------------%
     

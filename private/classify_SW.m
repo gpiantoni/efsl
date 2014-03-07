@@ -38,12 +38,13 @@ if ~isfield(cfg, 'mintrvl'); cfg.mintrvl = 0; end
 if ~isfield(cfg, 'else'); cfg.else = 0; end
 
 % channels that are in common (all apart from ECG and EOG)
-eeglab = chanlabels(D, meegchannels(D));
-eegpos = coor2D(D, meegchannels(D));
+D_meeg = meeg(D);
+eeglab = chanlabels(D_meeg, meegchannels(D_meeg));
+eegpos = coor2D(D_meeg, meegchannels(D_meeg));
 
 % % simple way of plotting location of slow wave
 % [X,Y] = meshgrid(0:.01:1);
-% a = griddata( eegpos(1,:), eegpos(2,:), cell2mat(D.CRC.SW.origin_count(:,3)), X, Y);
+% a = griddata( eegpos(1,:), eegpos(2,:), cell2mat(D.other.CRC.SW.origin_count(:,3)), X, Y);
 % figure; imagesc(X(1,:), Y(:,1), a)
 %---------------------------%
 
@@ -59,30 +60,30 @@ cfg1.plotsw = false;
 cfg1.mintrvl = cfg.mintrvl;
 cfg1.else = cfg.else;
 
-if isfield(D.CRC, 'SW')
-  SWtype = zeros(numel(D.CRC.SW.SW),1);
+if isfield(D.other.CRC, 'SW')
+  SWtype = zeros(numel(D.other.CRC.SW.SW),1);
 else % no slow waves detected
   SWtype = [];
   SWparam = [];
   return
 end
 
-progBar = progressBar(numel(D.CRC.SW.SW));
+progBar = progressBar(numel(D.other.CRC.SW.SW));
 
-for sw = 1:numel(D.CRC.SW.SW)
+for sw = 1:numel(D.other.CRC.SW.SW)
   progBar(sw)
   
   % extra check
-  if ~isempty(setxor(eeglab( D.CRC.SW.SW(sw).channels), D.CRC.SW.SW(sw).electrodes))
+  if ~isempty(setxor(eeglab( D.other.CRC.SW.SW(sw).channels), D.other.CRC.SW.SW(sw).electrodes))
     error(['chan labels don''t match chan index in SW ' num2str(sw)])
   end
   
-  eegx = eegpos(1, D.CRC.SW.SW(sw).channels)';
-  eegy = eegpos(2, D.CRC.SW.SW(sw).channels)';
-  eegz = D.CRC.SW.SW(sw).delays;
+  eegx = eegpos(1, D.other.CRC.SW.SW(sw).channels)';
+  eegy = eegpos(2, D.other.CRC.SW.SW(sw).channels)';
+  eegz = D.other.CRC.SW.SW(sw).delays;
   
-  rmref1 = find(D.CRC.SW.SW(sw).channels == 29);
-  rmref2 = find(D.CRC.SW.SW(sw).channels == 30);
+  rmref1 = find(D.other.CRC.SW.SW(sw).channels == 29);
+  rmref2 = find(D.other.CRC.SW.SW(sw).channels == 30);
   
   %-----------------%
   % we prob need to remove the two elec that are as ref (not always tho)
