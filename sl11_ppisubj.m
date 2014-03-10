@@ -45,6 +45,28 @@ pdir = [gdir 'PPI_' cfg.LCdf filesep];
 
 if isdir(pdir); rmdir(pdir, 's'); end
 %-------%
+
+%------%
+%-swf img
+rdir = sprintf('%s%s/rec/', cfg.data, ndir);
+
+%-use swf (spm-only pipeline) or wsf (feat/fix pipeline)
+if cfg.melo
+  preproc = 'wsf';
+else
+  preproc = 'swf';
+end  
+
+allrdir = dir([rdir 'r*']); % rec folder
+
+for r = 1:numel(allrdir) % r01, r02 etc
+  r0dir = [rdir allrdir(r).name filesep];
+  allfdir = dir([r0dir preproc '*.nii']);
+
+  swfIMG{r} = [r0dir allfdir(1).name];
+  swfIMG_3D{r} = split_into_3D(swfIMG{r});
+end
+%-------%
 %-----------------%
 
 %-------------------------------------%
@@ -128,6 +150,14 @@ for e = 1:2 % img and hdr
   copyfile(con_from, con_to);
 end
 %-----------------%
+
+%---------------------------%
+%-remerge files into 4D structure
+for r = 1:numel(swfIMG_3D)
+  merge_into_4D(swfIMG_3D{r});
+end
+%---------------------------%
+
 %---------------------------%
 %-------------------------------------%
 
