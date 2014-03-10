@@ -601,6 +601,13 @@ end
 %-------------------------------------%
 
 %---------------------------%
+%-remerge files into 4D structure
+for r = 1:numel(swfIMG)
+  merge_into_4D(swfIMG{r});
+end
+%---------------------------%
+
+%---------------------------%
 %-end log
 toc_t = toc(tic_t);
 outtmp = sprintf('(p%02.f) %s (v%02.f) ended at %s on %s after %s\n\n', ...
