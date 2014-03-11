@@ -64,14 +64,12 @@ eegdat = sprintf('%s_%04.f_%s_sleep_2.mat', ...
 
 %---------------------------%
 %-make chunks
-
 if strcmp(cfg.fast, 'old')
-  
   opt = [];
   opt.eeg_file = [edir eegdat];
 elseif strcmp(cfg.fast, 'git')
   matlabbatch = [];
-  matlabbatch{1}.fasst.chunking.data = {'/PHShome/gp902/projects/efsl/subjects/0002/eeg/efsl_0002_eeg_sleep_2.mat'};
+  matlabbatch{1}.fasst.chunking.data = {[edir eegdat]};
 end
 
 for c = 1:size(mkrS,1)
@@ -81,7 +79,7 @@ for c = 1:size(mkrS,1)
     opt.endmark = mkrS(c,2);
     
     crc_chunks_no_gui(opt)
-  elseif strcmp(cfg.fast, 'old')
+  elseif strcmp(cfg.fast, 'git')
     matlabbatch{1}.fasst.chunking.chunk(c).chunk_beg.t_mark.m_type = mkrS(c,1);
     matlabbatch{1}.fasst.chunking.chunk(c).chunk_beg.t_mark.m_ind = 1;
     matlabbatch{1}.fasst.chunking.chunk(c).chunk_end.t_mark.m_type = mkrS(c,2);
@@ -171,7 +169,8 @@ for c = 1:size(mkr(subj).mkr,1)
     matlabbatch{1}.fasst.wavedetect.sws.review.norev = true;
     matlabbatch{1}.fasst.wavedetect.sws.fmri.nfmri = true;
     
-    spm_jobman('run', matlabbatch)    
+    spm_jobman('run', matlabbatch)
+    
   end
   %-----------------%
   
