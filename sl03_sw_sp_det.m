@@ -104,15 +104,35 @@ if  subj == 14 && any(outbound_mkr)
   mkrS = mkr(subj).mkr( outbound_mkr, :);
   
   %-------%
-  opt = [];
-  opt.eeg_file = [edir eegdat3];
+  if strcmp(cfg.fast, 'old')
+    opt = [];
+    opt.eeg_file = [edir eegdat3];
+  elseif strcmp(cfg.fast, 'git')
+    matlabbatch = [];
+    matlabbatch{1}.fasst.chunking.data = {[edir eegdat3]};
+  end
+
   for c = 1:size(mkrS,1)
-    opt.idx_chk = c + numel(find(outbound_mkr == 0));
-    opt.begmark = mkrS(c,1);
-    opt.endmark = mkrS(c,2);
-    crc_chunks_no_gui(opt)
+    if strcmp(cfg.fast, 'old')
+      opt.idx_chk = c + numel(find(outbound_mkr == 0));
+      opt.begmark = mkrS(c,1);
+      opt.endmark = mkrS(c,2);
+      crc_chunks_no_gui(opt)
+    elseif strcmp(cfg.fast, 'git')
+      matlabbatch{1}.fasst.chunking.chunk(c).chunk_beg.t_mark.m_type = mkrS(c,1);
+      matlabbatch{1}.fasst.chunking.chunk(c).chunk_beg.t_mark.m_ind = 1;
+      matlabbatch{1}.fasst.chunking.chunk(c).chunk_end.t_mark.m_type = mkrS(c,2);
+      matlabbatch{1}.fasst.chunking.chunk(c).chunk_end.t_mark.m_ind = 1;
+    end
   end
   %-------%
+  
+  if strcmp(cfg.fast, 'git')
+    matlabbatch{1}.fasst.chunking.options.overwr = 1;
+    matlabbatch{1}.fasst.chunking.options.fn_prefix = 'chk';
+    matlabbatch{1}.fasst.chunking.options.numchunk = numel(find(outbound_mkr == 0)) + 1;
+    spm_jobman('run', matlabbatch)
+  end
   
 end
 %-----------------%
