@@ -46,7 +46,7 @@ cfg.scrp = [cfg.base 'scripts/'];
 
 if ~exist('crc_main')
   addpath([cfg.scrp 'final/'])
-  addpath([toolboxdir 'FASST_111017/'])
+  addpath([cfg.scrp 'final/fasst/'])
   addpath([toolboxdir 'spm8/'])
   addpath(genpath([toolboxdir 'spm8/external/fieldtrip/']));
   addpath([toolboxdir 'pppi_peak/PPPI/'])
@@ -55,8 +55,8 @@ if ~exist('crc_main')
   addpath([toolboxdir 'helpers'])
   
   spm_jobman('initcfg')
-  fast = crc_cfg_fasst;
-  cfg_util('addapp', fast)
+  % fast = crc_cfg_fasst;
+  % cfg_util('addapp', fast)
 end
 spm defaults fmri
 %-------------------------------------%
@@ -77,7 +77,7 @@ cfg.rslt = [cfg.anly 'spm/'];
 %-----------------%
 %-allow parallel computing, using bash
 subjall = [14 8 10 5 11 3 12 7 13 1 9 6 4 2];
-cfg.step = [4:13];
+cfg.step = [1:13];
 HPC = 1;
 %-----------------%
 
@@ -367,10 +367,13 @@ end
 % it deletes subject dir!
 if any(cfg.step ==  1)
   disp('running sl01_getdata')
-  if HPC
+  if HPC && false
     qsubcellfun(@sl01_getdata, cfgcell, subjcell, 'memreq', [], 'timreq', [], 'queue', 'matlab')
   else
-    sl01_getdata(cfgcell{1}, subjcell{1})
+    for i = 1:numel(subjcell)
+       sl01_getdata(cfgcell{i}, subjcell{i})
+    end
+
   end
 end
 %---------------------------%

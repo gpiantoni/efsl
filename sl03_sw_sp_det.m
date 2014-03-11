@@ -1,7 +1,8 @@
 function sl03_sw_sp_det(cfg, subj)
 %SLEEPLIEGE 03: Slow wave, spindle detection
 
-mversion = 9;
+mversion = 10;
+%10 14/03/05 use subset of functions of fast
 %09 11/09/28 change filter properties to detect sw
 %08 11/09/09 2nd argument for subj (and cfg.subj -> subj)
 %07 11/07/28 get the right name
@@ -11,10 +12,6 @@ mversion = 9;
 %03 11/02/07 no for subj
 %02 11/01/16 using matlab batch (instead of scripting)
 %01 11/01/14 created
-
-spm_jobman('initcfg');
-fast = crc_cfg_fasst;
-cfg_util('addapp', fast)
 
 %-----------------%
 %-input
@@ -67,22 +64,14 @@ eegdat = sprintf('%s_%04.f_%s_sleep_2.mat', ...
 
 %---------------------------%
 %-make chunks
-matlabbatch = [];
-
-matlabbatch{1}.fasst.chunking.data = {[edir eegdat]};
-
+opt = [];
+opt.eeg_file = [edir eegdat];
 for c = 1:size(mkrS,1)
-  matlabbatch{1}.fasst.chunking.chunk(c).chunk_beg.t_mark.m_type = mkrS(c,1);
-  matlabbatch{1}.fasst.chunking.chunk(c).chunk_beg.t_mark.m_ind = 1;
-  matlabbatch{1}.fasst.chunking.chunk(c).chunk_end.t_mark.m_type = mkrS(c,2);
-  matlabbatch{1}.fasst.chunking.chunk(c).chunk_end.t_mark.m_ind = 1;
+  opt.idx_chk = c;
+  opt.begmark = mkrS(c,1);
+  opt.endmark = mkrS(c,2);
+  crc_chunks_no_gui(opt)
 end
-
-matlabbatch{1}.fasst.chunking.options.overwr = 1;
-matlabbatch{1}.fasst.chunking.options.fn_prefix = cfg.echk;
-matlabbatch{1}.fasst.chunking.options.numchunk = 1;
-
-spm_jobman('run', matlabbatch)
 
 %-----------------%
 %-subject 14 has two sessions in EEG (this is the second)
@@ -94,23 +83,16 @@ if  subj == 14 && any(outbound_mkr)
   mkrS = mkr(subj).mkr( outbound_mkr, :);
   
   %-------%
-  matlabbatch = [];
-  
-  matlabbatch{1}.fasst.chunking.data = {[edir eegdat3]};
-  
+  opt = [];
+  opt.eeg_file = [edir eegdat3];
   for c = 1:size(mkrS,1)
-    matlabbatch{1}.fasst.chunking.chunk(c).chunk_beg.t_mark.m_type = mkrS(c,1);
-    matlabbatch{1}.fasst.chunking.chunk(c).chunk_beg.t_mark.m_ind = 1;
-    matlabbatch{1}.fasst.chunking.chunk(c).chunk_end.t_mark.m_type = mkrS(c,2);
-    matlabbatch{1}.fasst.chunking.chunk(c).chunk_end.t_mark.m_ind = 1;
+    opt.idx_chk = c + numel(find(outbound_mkr == 0));
+    opt.begmark = mkrS(c,1);
+    opt.endmark = mkrS(c,2);
+    crc_chunks_no_gui(opt)
   end
-  
-  matlabbatch{1}.fasst.chunking.options.overwr = 1;
-  matlabbatch{1}.fasst.chunking.options.fn_prefix = cfg.echk;
-  matlabbatch{1}.fasst.chunking.options.numchunk = numel(find(outbound_mkr == 0)) + 1; % start counting from the first chunk AFTER the chunks from the first EEG file
-  
-  spm_jobman('run', matlabbatch)
   %-------%
+  
 end
 %-----------------%
 %---------------------------%
@@ -130,34 +112,43 @@ for c = 1:size(mkr(subj).mkr,1)
   
   %-----------------%
   %-detect slow waves
-  matlabbatch = [];
+  handles = [];
+  handles.fname = chkdata;
+  handles.highfc = cfg.hpfilt;
+  handles.lowfc = cfg.lpfilt;
+ 
+  handles.analyse = 2;  % whole file
+  handles.fmri = false;
+  handles.reref = true;
+  handles.roisel = true;
+  handles.review = false;
   
-  matlabbatch{1}.fasst.wavedetect.sws.data = {chkdata};
+  crc_SWS_detect(handles)
   
-  matlabbatch{1}.fasst.wavedetect.sws.sel.allf = true;
-  matlabbatch{1}.fasst.wavedetect.sws.reref = true;
-  matlabbatch{1}.fasst.wavedetect.sws.filt.hpfilt = cfg.hpfilt;
-  matlabbatch{1}.fasst.wavedetect.sws.filt.lpfilt = cfg.lpfilt;
-  matlabbatch{1}.fasst.wavedetect.sws.roi.auto = true;
-  matlabbatch{1}.fasst.wavedetect.sws.review.norev = true;
-  matlabbatch{1}.fasst.wavedetect.sws.fmri.nfmri = true;
-  
-  spm_jobman('run', matlabbatch)
+  %------%
+  %-correct where SWS is stored
+  load(chkdata, 'D')
+  D.other.CRC.SW.SW = D.other.SW;
+  D.other.CRC.SW.origin_count = D.other.origin_count;
+  D.other.CRC.SW.DATA4ROI = D.other.DATA4ROI;
+  D.other = rmfield(D.other, {'SW', 'origin_count', 'DATA4ROI'});
+  save(chkdata, 'D')
+  %------%
   %-----------------%
   
   %-----------------%
   %-detect spindles
-  matlabbatch = [];
+  handles = [];
+  handles.fname = chkdata;
+  handles.highfc = 11;
+  handles.lowfc = 20;
+ 
+  handles.analyse = 2;  % whole file
+
+  handles.reref = true;
+  handles.review = false;
   
-  matlabbatch{1}.fast.sp.data = {chkdata};
-  
-  matlabbatch{1}.fast.sp.sel.allf = true;
-  matlabbatch{1}.fast.sp.reref = true;
-  matlabbatch{1}.fast.sp.filt.hpfilt = 11;
-  matlabbatch{1}.fast.sp.filt.lpfilt = 18;
-  matlabbatch{1}.fast.sp.review = false;
-  matlabbatch{1}.fast.sp.wavlet = false;
-  spm_jobman('run', matlabbatch)
+  crc_SP_detect(handles)
   %-----------------%
   
 end
