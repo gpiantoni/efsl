@@ -44,20 +44,15 @@ end
 
 cfg.scrp = [cfg.base 'scripts/'];
 
-if ~exist('crc_main')
-  addpath([cfg.scrp 'final/'])
-  addpath([cfg.scrp 'final/fasst/'])
-  addpath([toolboxdir 'spm8/'])
-  addpath(genpath([toolboxdir 'spm8/external/fieldtrip/']));
-  addpath([toolboxdir 'pppi_peak/PPPI/'])
-  addpath([matlabroot filesep 'toolbox/stats/stats'])  % nanmean in spm8/fieldtrip is broken
-  addpath([toolboxdir 'fieldtrip/qsub/'])
-  addpath([toolboxdir 'helpers'])
-  
-  spm_jobman('initcfg')
-  % fast = crc_cfg_fasst;
-  % cfg_util('addapp', fast)
-end
+restoredefaultpath
+
+addpath([cfg.scrp 'final/'])
+addpath([toolboxdir 'spm8/'])
+addpath(genpath([toolboxdir 'spm8/external/fieldtrip/']));
+addpath([toolboxdir 'pppi_peak/PPPI/'])
+addpath([matlabroot filesep 'toolbox/stats/stats'])  % nanmean in spm8/fieldtrip is broken
+addpath([toolboxdir 'fieldtrip/qsub/'])
+addpath([toolboxdir 'helpers'])
 spm defaults fmri
 %-------------------------------------%
 
@@ -76,9 +71,9 @@ cfg.rslt = [cfg.anly 'spm/'];
 
 %-----------------%
 %-allow parallel computing, using bash
-subjall = [14 8 10 5 11 3 12 7 13 1 9 6 4 2];
-cfg.step = [1:13];
-HPC = 1;
+subjall = 2; [14 8 10 5 11 3 12 7 13 1 9 6 4 2];
+cfg.step = 3; [1:13];
+HPC = 0;
 %-----------------%
 
 %-----------------%
@@ -106,6 +101,23 @@ cfg.mrkr = [cfg.anly 'fMRI_markers_GP.mat'];
 cfg.echk = 'chk';
 cfg.hpfilt = 0.2;
 cfg.lpfilt = 4;
+cfg.sphp = 11;
+cfg.splp = 20;
+
+cfg.fast = 'git'; % 'git' or 'old'
+
+%-------%
+if strcmp(cfg.fast, 'old')
+  addpath([cfg.scrp 'final/fasst/'])
+  spm_jobman('initcfg')
+elseif strcmp(cfg.fast, 'git')
+  addpath([toolboxdir 'FASST/'])
+  
+  spm_jobman('initcfg')
+  fast = crc_cfg_fasst;
+  cfg_util('addapp', fast)
+end
+%-------%
 %-----------------%
 
 %-----------------%

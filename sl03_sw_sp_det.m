@@ -64,13 +64,36 @@ eegdat = sprintf('%s_%04.f_%s_sleep_2.mat', ...
 
 %---------------------------%
 %-make chunks
-opt = [];
-opt.eeg_file = [edir eegdat];
+
+if strcmp(cfg.fast, 'old')
+  
+  opt = [];
+  opt.eeg_file = [edir eegdat];
+elseif strcmp(cfg.fast, 'git')
+  matlabbatch = [];
+  matlabbatch{1}.fasst.chunking.data = {'/PHShome/gp902/projects/efsl/subjects/0002/eeg/efsl_0002_eeg_sleep_2.mat'};
+end
+
 for c = 1:size(mkrS,1)
-  opt.idx_chk = c;
-  opt.begmark = mkrS(c,1);
-  opt.endmark = mkrS(c,2);
-  crc_chunks_no_gui(opt)
+  if strcmp(cfg.fast, 'old')
+    opt.idx_chk = c;
+    opt.begmark = mkrS(c,1);
+    opt.endmark = mkrS(c,2);
+    
+    crc_chunks_no_gui(opt)
+  elseif strcmp(cfg.fast, 'old')
+    matlabbatch{1}.fasst.chunking.chunk(c).chunk_beg.t_mark.m_type = mkrS(c,1);
+    matlabbatch{1}.fasst.chunking.chunk(c).chunk_beg.t_mark.m_ind = 1;
+    matlabbatch{1}.fasst.chunking.chunk(c).chunk_end.t_mark.m_type = mkrS(c,2);
+    matlabbatch{1}.fasst.chunking.chunk(c).chunk_end.t_mark.m_ind = 1;
+  end
+end
+
+if strcmp(cfg.fast, 'git')
+  matlabbatch{1}.fasst.chunking.options.overwr = 1;
+  matlabbatch{1}.fasst.chunking.options.fn_prefix = 'chk';
+  matlabbatch{1}.fasst.chunking.options.numchunk = 1;
+  spm_jobman('run', matlabbatch)
 end
 
 %-----------------%
@@ -112,43 +135,73 @@ for c = 1:size(mkr(subj).mkr,1)
   
   %-----------------%
   %-detect slow waves
-  handles = [];
-  handles.fname = chkdata;
-  handles.highfc = cfg.hpfilt;
-  handles.lowfc = cfg.lpfilt;
- 
-  handles.analyse = 2;  % whole file
-  handles.fmri = false;
-  handles.reref = true;
-  handles.roisel = true;
-  handles.review = false;
-  
-  crc_SWS_detect(handles)
-  
-  %------%
-  %-correct where SWS is stored
-  load(chkdata, 'D')
-  D.other.CRC.SW.SW = D.other.SW;
-  D.other.CRC.SW.origin_count = D.other.origin_count;
-  D.other.CRC.SW.DATA4ROI = D.other.DATA4ROI;
-  D.other = rmfield(D.other, {'SW', 'origin_count', 'DATA4ROI'});
-  save(chkdata, 'D')
-  %------%
+  if strcmp(cfg.fast, 'old')
+    handles = [];
+    handles.fname = chkdata;
+    handles.highfc = cfg.hpfilt;
+    handles.lowfc = cfg.lpfilt;
+
+    handles.analyse = 2;  % whole file
+    handles.fmri = false;
+    handles.reref = true;
+    handles.roisel = true;
+    handles.review = false;
+
+    crc_SWS_detect(handles)
+
+    %------%
+    %-correct where SWS is stored
+    load(chkdata, 'D')
+    D.other.CRC.SW.SW = D.other.SW;
+    D.other.CRC.SW.origin_count = D.other.origin_count;
+    D.other.CRC.SW.DATA4ROI = D.other.DATA4ROI;
+    D.other = rmfield(D.other, {'SW', 'origin_count', 'DATA4ROI'});
+    save(chkdata, 'D')
+    %------%
+    
+  elseif strcmp(cfg.fast, 'git')
+    matlabbatch = [];
+    
+    matlabbatch{1}.fasst.wavedetect.sws.data = {chkdata};
+    matlabbatch{1}.fasst.wavedetect.sws.sel.allf = true;
+    matlabbatch{1}.fasst.wavedetect.sws.reref = true;
+    matlabbatch{1}.fasst.wavedetect.sws.filt.hpfilt = cfg.hpfilt;
+    matlabbatch{1}.fasst.wavedetect.sws.filt.lpfilt = cfg.lpfilt;
+    matlabbatch{1}.fasst.wavedetect.sws.roi.auto = true;
+    matlabbatch{1}.fasst.wavedetect.sws.review.norev = true;
+    matlabbatch{1}.fasst.wavedetect.sws.fmri.nfmri = true;
+    
+    spm_jobman('run', matlabbatch)    
+  end
   %-----------------%
   
   %-----------------%
   %-detect spindles
-  handles = [];
-  handles.fname = chkdata;
-  handles.highfc = 11;
-  handles.lowfc = 20;
- 
-  handles.analyse = 2;  % whole file
+  if strcmp(cfg.fast, 'old')
+    handles = [];
+    handles.fname = chkdata;
+    handles.highfc = cfg.sphp;
+    handles.lowfc = cfg.splp;
 
-  handles.reref = true;
-  handles.review = false;
-  
-  crc_SP_detect(handles)
+    handles.analyse = 2;  % whole file
+
+    handles.reref = true;
+    handles.review = false;
+
+    crc_SP_detect(handles)
+  elseif strcmp(cfg.fast, 'git')
+    matlabbatch = [];
+    
+    matlabbatch{1}.fasst.wavedetect.sp.data = {chkdata};
+    matlabbatch{1}.fasst.wavedetect.sp.sel.allf = true;
+    matlabbatch{1}.fasst.wavedetect.sp.reref = true;
+    matlabbatch{1}.fasst.wavedetect.sp.filt.hpfilt = cfg.sphp;
+    matlabbatch{1}.fasst.wavedetect.sp.filt.lpfilt = cfg.splp;
+    matlabbatch{1}.fasst.wavedetect.sp.review = false;
+    matlabbatch{1}.fasst.wavedetect.sp.wavlet = false;
+
+    spm_jobman('run', matlabbatch)    
+  end
   %-----------------%
   
 end
