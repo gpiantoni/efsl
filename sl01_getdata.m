@@ -99,7 +99,7 @@ if strcmpi(cfg.type, 'eeg') || strcmpi(cfg.type, 'both')
   mkdir(eeg)
   
   %-------%
-  system(['ln -s ' inp '*.dat ' eeg]);
+  system(['cp ' inp '*.dat ' eeg]);
   system(['cp ' inp '*.mat ' eeg]);
   system(['chmod u+w ' eeg '*.mat']);
   %-------%
