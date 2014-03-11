@@ -132,12 +132,11 @@ cfg.smoo = 4; % <- bc names change depending on smoothing (although smoothing is
 
 %-----------------%
 %-cfg sl06_prepr_fmri
-cfg.melo = false;
+cfg.melo = true;
 %-----------------%
 
 %-----------------%
-%-cfg sl06b_get_melodic
-cfg.clme = [cfg.anly 'melodic_feat/clean/'];
+%-cfg sl06b_fun_featfix
 cfg.tfsf = [cfg.scrp 'final/private/template.fsf'];  % template fsf
 cfg.fixd = [toolboxdir 'fix1.06' filesep];
 cfg.ncmp = 20; % number of components
@@ -156,6 +155,7 @@ cfg.basopt = [10 5];
 cfg.volt = 1; % fd1 = no, 2 = yes (big problem if you include it, because there are not enough scans for some subjects!)
 cfg.heart = 'yes';
 cfg.wcon = 'no'; % yes or no (weight the contrasts for each session based on number of slow waves)
+cfg.cvrp = true; % use movement parameters as covariate (don't use if you run melo)
 
 %-------%
 %-contrasts to collect (only use one, otherwise it's not correct)
@@ -352,7 +352,7 @@ subjcell = num2cell(subjall);
 cfgcell = repmat({cfg}, 1, numel(subjall));
 rmdir([cfg.scrp 'final/qsublog'], 's')
 mkdir([cfg.scrp 'final/qsublog'])
-cd([cfg.scrp 'final/qsublog'])
+% cd([cfg.scrp 'final/qsublog'])
 
 %---------------------------%
 %-if running the exact same analysis, remove previous results
@@ -445,11 +445,15 @@ if any(cfg.step ==  6)
       sl06_prepr_fmri(cfgcell{1}, subjcell{1})
     end
   if cfg.melo
-     disp('running sl06b_get_melodic')
+     disp('running sl06b_run_featfix')
     if HPC
-      qsubcellfun(@sl06b_run_melodic, cfgcell, subjcell, 'memreq', [], 'timreq', [], 'queue', 'matlab');
+      qsubcellfun(@sl06b_run_featfix, cfgcell, subjcell, 'memreq', [], 'timreq', [], 'queue', 'matlab');
     else
-      sl06b_run_melodic(cfgcell{1}, subjcell{1})
+      sl06b_run_featfix(cfgcell{1}, subjcell{1})
+    end
+    
+    for i = 1:numel(subjcell)
+      sl06c_realign(cfgcell{i}, subjcell{i})
     end
   end    
 end

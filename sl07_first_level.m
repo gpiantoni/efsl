@@ -43,13 +43,21 @@ sdir = sprintf('%s%s/spm/', cfg.data, ndir);
 
 %------%
 %-swf img
+
+%-use swf (spm-only pipeline) or wsf (feat/fix pipeline)
+if cfg.melo
+  preproc = 'wsf';
+else
+  preproc = 'swf';
+end  
+
 allrdir = dir([rdir 'r*']); % rec folder
 
 clear swfIMG rp
 
 for r = 1:numel(allrdir) % r01, r02 etc
   r0dir = [rdir allrdir(r).name filesep];
-  allfdir = dir([r0dir 'swf*.nii']);
+  allfdir = dir([r0dir preproc '*.nii']);
   
   n_vol = count_volumes_from_name([r0dir allfdir(1).name]);
   for f = 1:n_vol
@@ -63,7 +71,7 @@ for r = 1:numel(allrdir) % r01, r02 etc
   % movement parameters from affine realignment of the volumes, don't do
   % any further realignment in SPM (and of course don't include motion
   % parameters in your stats model in SPM)
-  if ~cfg.melo
+  if cfg.cvrp
     allrp = dir([r0dir 'rp*.txt']);
     rp{r} = [r0dir allrp(1).name];
   end
@@ -173,7 +181,7 @@ if strfind(cfg.AorB, 'A')
       end
       
       matlabbatch{1}.spm.stats.fmri_spec.sess(rcnt).multi = {''};
-      if ~cfg.melo
+      if cfg.cvrp
          matlabbatch{1}.spm.stats.fmri_spec.sess(rcnt).multi_reg = rp(rcnt);
       end
       matlabbatch{1}.spm.stats.fmri_spec.sess(rcnt).hpf = 128;
@@ -439,7 +447,7 @@ if strfind(cfg.AorB, 'B')
       end
       
       matlabbatch{1}.spm.stats.fmri_spec.sess(rcnt).multi = {''};
-      if ~cfg.melo
+      if cfg.cvrp
         matlabbatch{1}.spm.stats.fmri_spec.sess(rcnt).multi_reg = rp(rcnt);
       end
       matlabbatch{1}.spm.stats.fmri_spec.sess(rcnt).hpf = 128;
