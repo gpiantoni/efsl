@@ -352,7 +352,7 @@ subjcell = num2cell(subjall);
 cfgcell = repmat({cfg}, 1, numel(subjall));
 rmdir([cfg.scrp 'final/qsublog'], 's')
 mkdir([cfg.scrp 'final/qsublog'])
-% cd([cfg.scrp 'final/qsublog'])
+cd([cfg.scrp 'final/qsublog'])
 
 %---------------------------%
 %-if running the exact same analysis, remove previous results
