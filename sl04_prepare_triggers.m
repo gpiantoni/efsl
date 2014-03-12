@@ -115,7 +115,12 @@ for r = 1:numel(chks)
   %-measure R-R
   ECGchan = find(strcmp({D.channels.label}, 'ECG'));
   
-  peaks = fmrib_qrsdetect(D, ECGchan, 0); % Detect peaks, in samples over recording
+  if strcmp(cfg.fast, 'old')
+    Dmeeg = D;
+  elseif strcmp(cfg.fast, 'git')
+    Dmeeg = meeg(D);
+  end
+  peaks = fmrib_qrsdetect(Dmeeg, ECGchan, 0); % Detect peaks, in samples over recording
   
   heart  = zeros(1, D.Nsamples);
   heart(peaks) = [diff(peaks/D.Fsample) 1]; % if an R was present in a particular sample

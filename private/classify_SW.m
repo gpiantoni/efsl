@@ -38,10 +38,22 @@ if ~isfield(cfg, 'mintrvl'); cfg.mintrvl = 0; end
 if ~isfield(cfg, 'else'); cfg.else = 0; end
 
 % channels that are in common (all apart from ECG and EOG)
-D_meeg = meeg(D);
-eeglab = chanlabels(D_meeg, meegchannels(D_meeg));
-eegpos = coor2D(D_meeg, meegchannels(D_meeg));
+if isfield(D.other.CRC.SW, 'DATA4ROI')  % old FASST: only EEG
+  warning('using old fasst channel names')
 
+  D_meeg = meeg(D);
+  eeglab = chanlabels(D_meeg, meegchannels(D_meeg));
+  eegpos = coor2D(D_meeg, meegchannels(D_meeg));
+else
+  warning('using new fasst channel names')
+  not_eeg = find(~ismember({D.channels.type}, {'EEG'}));
+  for i = 1:numel(not_eeg)
+    D.channels(not_eeg(i)).X_plot2D = NaN;
+    D.channels(not_eeg(i)).Y_plot2D = NaN;
+  end
+  eeglab = {D.channels.label};
+  eegpos = [[D.channels.X_plot2D]; [D.channels.Y_plot2D]];
+end  
 % % simple way of plotting location of slow wave
 % [X,Y] = meshgrid(0:.01:1);
 % a = griddata( eegpos(1,:), eegpos(2,:), cell2mat(D.other.CRC.SW.origin_count(:,3)), X, Y);
