@@ -72,7 +72,7 @@ cfg.rslt = [cfg.anly 'spm/'];
 %-----------------%
 %-allow parallel computing, using bash
 subjall = [14 8 10 5 11 3 12 7 13 1 9 6 4 2];
-cfg.step = [1:13];
+cfg.step =3; [1:13];
 HPC = 1;
 %-----------------%
 
@@ -109,14 +109,10 @@ cfg.fast = 'git'; % 'git' or 'old'
 %-------%
 if strcmp(cfg.fast, 'old')
   addpath([cfg.scrp 'final/fasst/'])
-  spm_jobman('initcfg')
 elseif strcmp(cfg.fast, 'git')
   addpath([toolboxdir 'FASST/'])
-  
-  spm_jobman('initcfg')
-  fast = crc_cfg_fasst;
-  cfg_util('addapp', fast)
 end
+spm_jobman('initcfg')
 %-------%
 %-----------------%
 

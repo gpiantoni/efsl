@@ -20,6 +20,16 @@ if nargin == 1
 end
 %-----------------%
 
+%-----------------%
+%-load fasst in batch
+if strcmp(cfg.fast, 'git')
+  spm_jobman('initcfg')
+  fast = crc_cfg_fasst;
+  cfg_util('addapp', fast)
+end
+%-----------------%
+
+
 %---------------------------%
 %-start log
 output = sprintf('(p%02.f) %s (v%02.f) started at %s on %s\n', ...
@@ -149,6 +159,13 @@ for c = 1:size(mkr(subj).mkr,1)
   else
     chkdata = [edir cfg.echk num2str(c) '_' eegdat];
   end
+  %-----------------%
+  
+  %-----------------%
+  %-set everything to stage 4
+  load(chkdata, 'D')
+  D.other.CRC.score{1} = 4 * ones(size(D.other.CRC.score{1}));
+  save(chkdata, 'D')  
   %-----------------%
   
   %-----------------%
