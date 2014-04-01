@@ -72,7 +72,7 @@ cfg.rslt = [cfg.anly 'spm/'];
 %-----------------%
 %-allow parallel computing, using bash
 subjall = [14 8 10 5 11 3 12 7 13 1 9 6 4 2];
-cfg.step = 4; [1:13];
+cfg.step = [7:13];
 HPC = 1;
 %-----------------%
 
@@ -104,7 +104,7 @@ cfg.lpfilt = 4;
 cfg.sphp = 11;
 cfg.splp = 20;
 
-cfg.fast = 'old'; % 'git' or 'old'
+cfg.fast = 'git'; % 'git' or 'old'
 
 %-------%
 if strcmp(cfg.fast, 'old')
@@ -140,7 +140,7 @@ cfg.smoo = 4; % <- bc names change depending on smoothing (although smoothing is
 
 %-----------------%
 %-cfg sl06_prepr_fmri
-cfg.melo = true;
+cfg.melo = false;
 %-----------------%
 
 %-----------------%
@@ -157,13 +157,13 @@ cfg.AorB = 'B'; % 'A' -> only main analysis, 'B' -> only f2b/b2f, 'AB' -> both
 cfg.dlay = 0; % delay in seconds
 cfg.pmod = ''; % '' or '_pmod-dur' or '_pmod-par' ('_pmod-par' only affects b/sSW contrast, while the main SW contrast remains ''). Note that '_pmod-dur' somehow creates empty columns, so no valid contrasts. idk y, but not important
 cfg.bases = 'fir'; % 'hrf' or 'fir'
-cfg.basopt = [10 5]; 
+cfg.basopt = [6 3]; 
 % for hrf [0 0] (simple hrf) or [1 1] (with derivative)
 % for fir [12 6] length and duration
 cfg.volt = 1; % fd1 = no, 2 = yes (big problem if you include it, because there are not enough scans for some subjects!)
-cfg.heart = 'yes';
+cfg.heart = 'no';
 cfg.wcon = 'no'; % yes or no (weight the contrasts for each session based on number of slow waves)
-cfg.cvrp = true; % use movement parameters as covariate (don't use if you run melo)
+cfg.cvrp = false; % use movement parameters as covariate (don't use if you run melo)
 
 %-------%
 %-contrasts to collect (only use one, otherwise it's not correct)
@@ -196,18 +196,14 @@ elseif strcmp(cfg.pmod, '_pmod-dur') || strcmp(cfg.pmod, '_pmod-par')
   cfg.evtB(1).con  = 1;
   cfg.evtB(2).img = {'f2bSWparam'};
   cfg.evtB(2).con  = 1;
-  cfg.evtB(3).img = {'f2bSWmain' 'f2bSWparam'};
-  cfg.evtB(3).con  = [1 1];
-  cfg.evtB(3).img = {'f2bSWmain' 'f2bSWparam'};
-  cfg.evtB(3).con  = [1 1];
-  cfg.evtB(4).img = {'b2fSWmain'};
+  cfg.evtB(3).img = {'b2fSWmain'};
+  cfg.evtB(3).con  = 1;
+  cfg.evtB(4).img = {'b2fSWparam'};
   cfg.evtB(4).con  = 1;
-  cfg.evtB(5).img = {'b2fSWparam'};
-  cfg.evtB(5).con  = 1;
-  cfg.evtB(6).img = {'b2fSWmain' 'b2fSWparam'};
-  cfg.evtB(6).con  = [1 1];
-  cfg.evtB(7).img = {'f2bSWparam' 'b2fSWparam'};
-  cfg.evtB(7).con  = [1 -1];
+  cfg.evtB(5).img = {'f2bSWmain' 'b2fSWmain'};
+  cfg.evtB(5).con  = [1 -1];
+  cfg.evtB(6).img = {'f2bSWparam' 'b2fSWparam'};
+  cfg.evtB(6).con  = [1 -1];
 end
 %-------%
 %-----------------%
