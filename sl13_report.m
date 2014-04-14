@@ -56,6 +56,17 @@ end
 output = sprintf('%s===================\n', output);
 %---------------------------%
 
+
+%---------------------------%
+%recap of slow waves
+output = sprintf('%s===================\n', output);
+output = sprintf('%sSlow wave summary\n', output);
+
+output = [output 
+
+output = sprintf('%s===================\n', output);
+%---------------------------%
+
 %---------------------------%
 %activation in main SW: map, p-value, ROI
 for i = 1:numel(cfg.evtA)
