@@ -280,11 +280,12 @@ cfg.ptsk = cfg.LCic ; % which task, index of contrast, similar to cfg.LCic
 %-cfg sl13_report
 %-------%
 %-report results
-cfg.gdLC = [6 -38 -22]; % if peak is here, it's LC! (it might depend on voxel size)
 cfg.gdLC = [6 -38 -22; -6 -38 -22; 
             6 -38 -24; -6 -38 -24;
             6 -36 -24; -6 -36 -24;
             4 -36 -24; -4 -36 -24]; % if peak is here, it's LC! (it might depend on voxel size)
+cfg.gdLC = [2 -36 -24;
+            4 -36 -24];
 cfg.csvf = [cfg.anly 'spm/efsl.csv'];
 %-------%
 %-----------------%

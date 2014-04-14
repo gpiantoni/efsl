@@ -17,6 +17,8 @@ function [output outcsv] = peak_n_ROI(condir, corrp, k, ROI)
 %02 11/04/26 requires Ic (contrast index) as input
 %01 11/04/26 created
 
+global xyz_inLC
+
 %---------------------------%
 %-check input
 if ~isdir(condir) || ~exist([condir 'SPM.mat'], 'file')
@@ -69,7 +71,7 @@ if size(xSPM.Z, 2) == 0
   %-----------------%
   %-check anyway it is significant in ROI
   if nargin == 4
-    outtmp = compare_con(SPM, ROI);
+    outtmp = compare_con(SPM, xyz_inLC);
     output = [output outtmp];
     outcsv = sprintf('%s%1.f,', outcsv, numel(strfind(outtmp, sprintf('\n'))));
   end
@@ -124,6 +126,8 @@ else
       if ~isempty(inROI) % and it matches!
         output = sprintf('%s  <-- includes ROI [% 4.f % 4.f % 4.f]\n', output, inROI(1,1), inROI(1,2), inROI(1,3)); % only show first one if there are more
         inLC = true;
+        xyz_inLC = cls(c).XYZmm;
+        
       else
         output = sprintf('%s\n', output);
       end
@@ -202,8 +206,8 @@ for v = 1:size(XYZ,1) % for each voxel in ROI
     
     [~, P] = ttest(allval);
     if P < .1
-    output = sprintf('%s   ROI [% 3.f % 3.f % 3.f] - base n. %1.f: % 7.3f, p-value% 3.4f\n', ...
-      output, ROI(v,1), ROI(v,2), ROI(v,3), b, mean(allval), P);
+    output = sprintf('%s   ROI [% 3.f % 3.f % 3.f] - base n. %1.f: % 7.3f (% 7.3f), p-value% 3.4f\n', ...
+      output, ROI(v,1), ROI(v,2), ROI(v,3), b, mean(allval), std(allval), P);
     end
   end
 end

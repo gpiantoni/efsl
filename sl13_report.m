@@ -62,13 +62,16 @@ output = sprintf('%s===================\n', output);
 output = sprintf('%s===================\n', output);
 output = sprintf('%sSlow wave summary\n', output);
 
-output = [output sw_summary(cfg)];
+% output = [output sw_summary(cfg)];
 
 output = sprintf('%s===================\n', output);
 %---------------------------%
 
 %---------------------------%
 %activation in main SW: map, p-value, ROI
+global xyz_inLC
+xyz_inLC = [];  % if we're running final_efsl multiple times
+
 for i = 1:numel(cfg.evtA)
   dirAcon = [cfg.dirA cfg.evtA(i).name filesep];
   
