@@ -1,5 +1,7 @@
 function output = sw_summary(cfg)
 
+nsubj = 14;
+
 n_f2b = zeros(nsubj, 1);
 n_b2f = zeros(nsubj, 1);
 
@@ -15,7 +17,7 @@ for subj = 1:nsubj
   trig_file = [trig_dir cfg.trigB];
   load(trig_file)
   
-  eeg_dir = sprintf('%s%04d/eeg/', subj_dir, subj);
+  eeg_dir = sprintf('%s%04d/eeg/', cfg.data, subj);
   chk = dir([eeg_dir 'chk*.mat']);
   
   for i = 1:numel(chk)
@@ -107,5 +109,5 @@ plot(t(h_adjusted == -1), .04 * ones(1, numel(find(h_adjusted == -1))), '+b')
 errorfill(t, m_f2b', se_f2b', 'r'); % errorfill in private
 errorfill(t, m_b2f', se_b2f', 'b');
 
-saveas(h, [cfg.outp 'slow_wave_delays,pdf'])
+saveas(h, [cfg.outp 'slow_wave_delays.pdf'])
 close(h)

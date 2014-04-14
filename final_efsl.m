@@ -72,7 +72,7 @@ cfg.rslt = [cfg.anly 'spm/'];
 %-----------------%
 %-allow parallel computing, using bash
 subjall = [14 8 10 5 11 3 12 7 13 1 9 6 4 2];
-cfg.step = [7:13];
+cfg.step = [13];
 HPC = 1;
 %-----------------%
 
@@ -140,7 +140,7 @@ cfg.smoo = 4; % <- bc names change depending on smoothing (although smoothing is
 
 %-----------------%
 %-cfg sl06_prepr_fmri
-cfg.melo = false;
+cfg.melo = true;
 %-----------------%
 
 %-----------------%
@@ -157,7 +157,7 @@ cfg.AorB = 'B'; % 'A' -> only main analysis, 'B' -> only f2b/b2f, 'AB' -> both
 cfg.dlay = 0; % delay in seconds
 cfg.pmod = ''; % '' or '_pmod-dur' or '_pmod-par' ('_pmod-par' only affects b/sSW contrast, while the main SW contrast remains ''). Note that '_pmod-dur' somehow creates empty columns, so no valid contrasts. idk y, but not important
 cfg.bases = 'fir'; % 'hrf' or 'fir'
-cfg.basopt = [6 3]; 
+cfg.basopt = [10 5]; 
 % for hrf [0 0] (simple hrf) or [1 1] (with derivative)
 % for fir [12 6] length and duration
 cfg.volt = 1; % fd1 = no, 2 = yes (big problem if you include it, because there are not enough scans for some subjects!)
