@@ -341,6 +341,17 @@ fwrite(fid, output);
 fwrite(fid, sprintf('GIT VERSION: %s\n', gitversion));
 
 %-----------------%
+%-FASST versuib
+if strcmp(cfg.fast, 'old')
+  fwrite(fid, sprintf('FASST: embedded\n'))
+elseif strcmp(cfg.fast, 'git')
+  [~, gitversion] = system(['git --git-dir ' toolboxdir 'FASST/.git' ' rev-parse HEAD']);
+  [~, gitbranch] = system(['git --git-dir ' toolboxdir 'FASST/.git' ' rev-parse --abbrev-ref HEAD']);
+  fwrite(fid, sprintf('FASST VERSION (%s): %s\n', strtrim(gitbranch), gitversion));
+end
+%-----------------%
+
+%-----------------%
 %-cfg in log
 output = struct2log(cfg);
 fprintf(output)
