@@ -56,6 +56,9 @@ for subj = 1:nsubj
   v_f2b{subj} = cell2mat(arrayfun(@(x)(x.delays), f2b, 'uni', 0));
   v_b2f{subj} = cell2mat(arrayfun(@(x)(x.delays), b2f, 'uni', 0));
   
+  v_f2b{subj} = cell2mat(arrayfun(@(x)(mean(x.delays)), f2b, 'uni', 0));
+  v_b2f{subj} = cell2mat(arrayfun(@(x)(mean(x.delays)), b2f, 'uni', 0));
+    
   % v_f2b(subj) = mean([f2b.amplitude]);  
   % v_b2f(subj) = mean([b2f.amplitude]);
   
@@ -99,12 +102,12 @@ se_b2f = std(k_b2f, [], 2) / sqrt(nsubj);
 [h, p] = ttest(k_f2b' - k_b2f');
 
 d_k = mean(k_f2b' - k_b2f');
-h_adjusted = double(fdr(p) < 0.05) .* sign(d_k);  % fdr in private
+h_adjusted = double(fdr(p) < 0.05) .* sign(d_k);
 
 h = figure;
 hold on
-plot(t(h_adjusted == 1), .04 * ones(1, numel(find(h_adjusted == 1))), '+r') 
-plot(t(h_adjusted == -1), .04 * ones(1, numel(find(h_adjusted == -1))), '+b') 
+plot(t(h_adjusted == 1), .05 * ones(1, numel(find(h_adjusted == 1))), '+r') 
+plot(t(h_adjusted == -1), .05 * ones(1, numel(find(h_adjusted == -1))), '+b') 
 
 errorfill(t, m_f2b', se_f2b', 'r'); % errorfill in private
 errorfill(t, m_b2f', se_b2f', 'b');

@@ -62,7 +62,7 @@ output = sprintf('%s===================\n', output);
 output = sprintf('%s===================\n', output);
 output = sprintf('%sSlow wave summary\n', output);
 
-% output = [output sw_summary(cfg)];
+output = [output sw_summary(cfg)];
 
 output = sprintf('%s===================\n', output);
 %---------------------------%

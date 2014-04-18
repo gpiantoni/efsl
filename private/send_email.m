@@ -42,8 +42,8 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Send the email
 if isempty(attachment)
-  send_mail_message('gpiantoni.work', 'Sleep EEG-fMRI Liege', mailtext)
+  send_mail_message('gpiantoni', 'Sleep EEG-fMRI Liege', mailtext)
 else
-  send_mail_message('gpiantoni.work', 'Sleep EEG-fMRI Liege', mailtext, attachment)
+  send_mail_message('gpiantoni', 'Sleep EEG-fMRI Liege', mailtext, attachment)
 end
 

@@ -550,7 +550,7 @@ end
 
 %-----------------%
 %-send email
-% send_email(cfg)
+send_email(cfg)
 %-----------------%
 
 cd([cfg.scrp 'final/'])
