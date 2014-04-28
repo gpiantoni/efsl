@@ -24,7 +24,7 @@ end
 
 nii_3D = spm_file_split(single_nii_4D);
 delete(single_nii_4D)
-delete([single_nii_4D(1:end-3) '.mat'])
+delete([single_nii_4D(1:end-3) 'mat'])
 
 list_nii_3D = {};
 for i = 1:numel(nii_3D)
