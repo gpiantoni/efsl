@@ -84,6 +84,7 @@ for i = 1:numel(cfg.evtA)
   end
 end
 %---------------------------%
+disp('to make estimate plot, got to spm_graph, l.350')
 
 %---------------------------%
 %-write to csv
