@@ -111,16 +111,16 @@ for i = 1:numel(cfg.evtB)
 end
 %---------------------------%
 
-%---------------------------%
-%activation in PPI: map, p-value
-dirPPI = [cfg.dirB cfg.evtB(cfg.LCic).name filesep 'PPI_' cfg.LCdf filesep];
-if isdir(dirPPI)
-  output = sprintf('%s===================\n', output);
-  output = sprintf('%sPPI SW\n', output);
-  output = [output peak_n_ROI(dirPPI, 'none', 5)];
-  output = sprintf('%s===================\n\n', output);
-end
-%---------------------------%
+% %---------------------------%
+% %activation in PPI: map, p-value
+% dirPPI = [cfg.dirB cfg.evtB(cfg.LCic).name filesep 'PPI_' cfg.LCdf filesep];
+% if isdir(dirPPI)
+%   output = sprintf('%s===================\n', output);
+%   output = sprintf('%sPPI SW\n', output);
+%   output = [output peak_n_ROI(dirPPI, 'none', 5)];
+%   output = sprintf('%s===================\n\n', output);
+% end
+% %---------------------------%
 
 %-------%
 output = sprintf('%s=======================================\n\n', output);

@@ -71,7 +71,7 @@ cfg.rslt = [cfg.anly 'spm/'];
 
 %-----------------%
 %-allow parallel computing, using bash
-subjall = [14 8 10 5 11 3 12 7 13 1 9 6 4 2];
+subjall = [14 8 10 5 11 3 12 7 13 1 9 6 4 2]; 
 cfg.step = [13];
 HPC = 1;
 %-----------------%
@@ -223,14 +223,15 @@ cfg.dMsk = [cfg.anly 'masks/'];
 % with the ROIs and atlas that you specify. It checks with the current
 % cfg.msk2 content matches cfg.atls and ROIs, otherwise, over-writes it.
 
-cfg.msk2 = 'ponsredrawn'; %'ponsredrawn'; %'ponsdrawn'; % 'ponsdrawn' 'lobe_midbrain' 'midbraindrawn' 'ponsdrawn'; % 'no', 'con1' or 'lobe_midbrain' other
+cfg.msk2 = 'ponsredrawn'; % 'postpons' 'ponsredrawn' 'lobe_midbrain' 'midbraindrawn' 'ponsdrawn'; % 'no', 'con1' or 'lobe_midbrain' other
 % find atlas and regions info:
 % /usr/local/toolbox/WFU_PickAtlas_3.0.1/wfu_pickatlas/MNI_atlas_templates
 cfg.atls =  'drawn'; %'TD_lobe'; % 'TD_hemisphere' 'TD_lobe' 'atlas71'; % leave empty if you don't use it, or 'drawn'
 cfg.ROIs = {''};
-%-LC should be in the pons, according to wikipedia
+%-LC is in the pons
 % hemisphere_lfbrainstem is too large
 % lobe pons is too anterior, only front part of pons is in the mask
+% fslmaths ponsredrawn.nii -roi -1 -1 70 15 10 20 -1 -1 postpons
 %-------%
 %-----------------%
 
@@ -456,16 +457,18 @@ end
 if any(cfg.step ==  6)
    disp('running sl06_prepr_fmri')
     if HPC 
-      qsubcellfun(@sl06_prepr_fmri, cfgcell, subjcell, 'memreq', [], 'timreq', [], 'queue', 'matlab')
+      % qsubcellfun(@sl06_prepr_fmri, cfgcell, subjcell, 'memreq', [], 'timreq', [], 'queue', 'matlab')
     else
-      sl06_prepr_fmri(cfgcell{1}, subjcell{1})
+      % sl06_prepr_fmri(cfgcell{1}, subjcell{1})
     end
   if cfg.melo
      disp('running sl06b_run_featfix')
     if HPC
       qsubcellfun(@sl06b_run_featfix, cfgcell, subjcell, 'memreq', [], 'timreq', [], 'queue', 'matlab');
     else
-      sl06b_run_featfix(cfgcell{1}, subjcell{1})
+      for i = 1:numel(subjcell)
+        sl06b_run_featfix(cfgcell{i}, subjcell{i})
+      end
     end
     
     for i = 1:numel(subjcell)
@@ -519,7 +522,7 @@ if any(cfg.step == 10) && ~strcmp(cfg.LCdf(1:3), 'ROI')
 end
 %---------------------------%
 
-if strcmp(cfg.LCdf(1:3), 'ROI') || exist([cfg.dirB cfg.evtB(cfg.LCic).name filesep 'ROI_' cfg.LCdf '.hdr'], 'file')
+if 0 && (strcmp(cfg.LCdf(1:3), 'ROI') || exist([cfg.dirB cfg.evtB(cfg.LCic).name filesep 'ROI_' cfg.LCdf '.hdr'], 'file'))
   
   %---------------------------%
   %-if running the exact same analysis, remove previous results
@@ -561,7 +564,7 @@ end
 
 %-----------------%
 %-send email
-send_email(cfg)
+% send_email(cfg)
 %-----------------%
 
 cd([cfg.scrp 'final/'])

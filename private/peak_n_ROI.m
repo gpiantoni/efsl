@@ -186,30 +186,36 @@ XYZ = SPM.VM.mat \ [ROI'; ones(1,size(ROI,1))];
 XYZ = XYZ(1:3,:)';
 %-------%
 
-output = '';
-
 %-----------------%
-for v = 1:size(XYZ,1) % for each voxel in ROI
-  
-  for b = 1:size(SPM.xX.X,2)
-        
-    clear allval
+n_bases = size(SPM.xX.X, 2); % number of bases 
+n_subj = size(SPM.xX.X, 1) / n_bases;
+n_vox = size(XYZ, 1);
+allval = zeros(n_bases, n_subj, n_vox);  
+
+for b = 1:n_bases
     
-    conall = find(SPM.xX.X(:,b));
+    conall = find(SPM.xX.X(:, b));
     for j = 1:numel(conall)
-    confile = SPM.xY.P{conall(j)};
-      
-      val  = spm_get_data(confile, XYZ(v,:)');
-      allval(j) = mean(val);
-      
+        
+        confile = SPM.xY.P{conall(j)};
+        
+        val  = spm_get_data(confile, XYZ');
+        allval(b, j, :) = val;
+        
     end
     
-    [~, P] = ttest(allval);
-    if P < .1
-    output = sprintf('%s   ROI [% 3.f % 3.f % 3.f] - base n. %1.f: % 7.3f (% 7.3f), p-value% 3.4f\n', ...
-      output, ROI(v,1), ROI(v,2), ROI(v,3), b, mean(allval), std(allval), P);
-    end
-  end
+end
+
+% average ROI
+roi = mean(allval, 3)';
+[~, P] = ttest(roi);
+
+
+output = '';
+for i =1:n_bases
+    contrast_name = SPM.xX.name{i};
+    output = sprintf('%s   ROI average - %s: % 7.3f (% 7.3f), p-value% 3.4f\n', ...
+        output, contrast_name, mean(roi(:, i)), std(roi(:, i)) / sqrt(n_subj), P(i));
 end
 %-----------------%
 %---------------------------%
