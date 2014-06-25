@@ -72,8 +72,8 @@ cfg.rslt = [cfg.anly 'spm/'];
 %-----------------%
 %-allow parallel computing, using bash
 subjall = [14 8 10 5 11 3 12 7 13 1 9 6 4 2]; 
-cfg.step = [13];
-HPC = 1;
+cfg.step = [7:13];
+HPC = 0;
 %-----------------%
 
 %-----------------%
@@ -385,7 +385,8 @@ end
 if any(cfg.step ==  1)
   disp('running sl01_getdata')
   if HPC && false
-    qsubcellfun(@sl01_getdata, cfgcell, subjcell, 'memreq', [], 'timreq', [], 'queue', 'matlab')
+    qsubcellfun(@sl01_getdata, cfgcell, subjcell, 'memreq', [], 'timreq', [], ...
+      'queue', 'matlab', 'options', ' -R "select[hname!=cmu073]" ')
   else
     for i = 1:numel(subjcell)
        sl01_getdata(cfgcell{i}, subjcell{i})
@@ -403,7 +404,8 @@ if any(cfg.step ==  2) && 0
     warning('using backup markers: sl02_prepr_eeg is not necessary')
   else
     disp('running sl02_prepr_eeg')
-    qsubcellfun(@sl02_prepr_eeg, cfgcell, subjcell, 'memreq', [], 'timreq', [], 'queue', 'matlab')
+    qsubcellfun(@sl02_prepr_eeg, cfgcell, subjcell, 'memreq', [], 'timreq', [], ...
+      'queue', 'matlab', 'options', ' -R "select[hname!=cmu073]" ')
   end
   
 end
@@ -417,9 +419,12 @@ if any(cfg.step ==  3)
   else
     disp('running sl03_sw_sp_det')
     if HPC
-      qsubcellfun(@sl03_sw_sp_det, cfgcell, subjcell, 'memreq', [], 'timreq', [], 'queue', 'matlab')
+      qsubcellfun(@sl03_sw_sp_det, cfgcell, subjcell, 'memreq', [], 'timreq', [], ...
+      'queue', 'matlab', 'options', ' -R "select[hname!=cmu073]" ')
     else
-      sl03_sw_sp_det(cfgcell{1}, subjcell{1})
+      for i = 1:numel(subjcell)
+        sl03_sw_sp_det(cfgcell{i}, subjcell{i})
+      end
     end
   end
 end
@@ -430,9 +435,12 @@ end
 if any(cfg.step ==  4)
   disp('running sl04_prepare_triggers')
   if HPC
-    qsubcellfun(@sl04_prepare_triggers, cfgcell, subjcell, 'memreq', [], 'timreq', [], 'queue', 'matlab')
+    qsubcellfun(@sl04_prepare_triggers, cfgcell, subjcell, 'memreq', [], 'timreq', [], ...
+      'queue', 'matlab', 'options', ' -R "select[hname!=cmu073]" ')
   else
-    sl04_prepare_triggers(cfgcell{1}, subjcell{1})
+    for i = 1:numel(subjcell)
+      sl04_prepare_triggers(cfgcell{i}, subjcell{i})
+    end
   end
 end
 %---------------------------%
@@ -443,7 +451,8 @@ end
 if any(cfg.step ==  5)
   disp('running sl05_divide_rec')
   if HPC && false  % sshfs is only mounted on the pc running matlab
-    qsubcellfun(@sl05_divide_rec, cfgcell, subjcell, 'memreq', [], 'timreq', [], 'queue', 'matlab')
+    qsubcellfun(@sl05_divide_rec, cfgcell, subjcell, 'memreq', [], 'timreq', [], ...
+      'queue', 'matlab', 'options', ' -R "select[hname!=cmu073]" ')
   else
     for i = 1:numel(subjcell)
       sl05_divide_rec(cfgcell{i}, subjcell{i})
@@ -457,14 +466,18 @@ end
 if any(cfg.step ==  6)
    disp('running sl06_prepr_fmri')
     if HPC 
-      % qsubcellfun(@sl06_prepr_fmri, cfgcell, subjcell, 'memreq', [], 'timreq', [], 'queue', 'matlab')
+      qsubcellfun(@sl06_prepr_fmri, cfgcell, subjcell, 'memreq', [], 'timreq', [], ...
+      'queue', 'matlab', 'options', ' -R "select[hname!=cmu073]" ')
     else
-      % sl06_prepr_fmri(cfgcell{1}, subjcell{1})
+      for i = 1:numel(subjcell)
+        sl06_prepr_fmri(cfgcell{i}, subjcell{i})
+      end
     end
   if cfg.melo
      disp('running sl06b_run_featfix')
     if HPC
-      qsubcellfun(@sl06b_run_featfix, cfgcell, subjcell, 'memreq', [], 'timreq', [], 'queue', 'matlab');
+      qsubcellfun(@sl06b_run_featfix, cfgcell, subjcell, 'memreq', [], 'timreq', [], ...
+      'queue', 'matlab', 'options', ' -R "select[hname!=cmu073]" ')
     else
       for i = 1:numel(subjcell)
         sl06b_run_featfix(cfgcell{i}, subjcell{i})
@@ -484,9 +497,12 @@ end
 if any(cfg.step ==  7)
   disp('running sl07_first_level')
   if HPC
-    qsubcellfun(@sl07_first_level, cfgcell, subjcell, 'memreq', [], 'timreq', [], 'queue', 'matlab');
+    qsubcellfun(@sl07_first_level, cfgcell, subjcell, 'memreq', [], 'timreq', [], ...
+      'queue', 'matlab', 'options', ' -R "select[hname!=cmu073]" ')
   else
-    sl07_first_level(cfgcell{1}, subjcell{1})
+    for i = 1:numel(subjcell)
+      sl07_first_level(cfgcell{i}, subjcell{i})
+    end
   end
 end
 %---------------------------%
@@ -538,7 +554,8 @@ if 0 && (strcmp(cfg.LCdf(1:3), 'ROI') || exist([cfg.dirB cfg.evtB(cfg.LCic).name
     cd([cfg.scrp 'final/qsublog'])
     disp('running sl11_ppi_subj')
     if HPC
-      qsubcellfun(@sl11_ppisubj, cfgcell, subjcell, 'memreq', [], 'timreq', [], 'queue', 'matlab')
+      qsubcellfun(@sl11_ppisubj, cfgcell, subjcell, 'memreq', [], 'timreq', [], ...
+      'queue', 'matlab', 'options', ' -R "select[hname!=cmu073]" ')
     else
       sl11_ppisubj(cfgcell{1}, subjcell{1})
     end

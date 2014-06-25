@@ -70,7 +70,7 @@ if size(xSPM.Z, 2) == 0
   
   %-----------------%
   %-check anyway it is significant in ROI
-  if nargin == 4
+  if nargin == 4 && ~isempty(xyz_inLC)
     outtmp = compare_con(SPM, xyz_inLC);
     output = [output outtmp];
     outcsv = sprintf('%s%1.f,', outcsv, numel(strfind(outtmp, sprintf('\n'))));
