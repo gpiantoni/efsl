@@ -72,8 +72,8 @@ cfg.rslt = [cfg.anly 'spm/'];
 %-----------------%
 %-allow parallel computing, using bash
 subjall = [14 8 10 5 11 3 12 7 13 1 9 6 4 2]; 
-cfg.step = [7:13];
-HPC = 0;
+cfg.step = [4 7:13];
+HPC = 1;
 %-----------------%
 
 %-----------------%
@@ -123,8 +123,13 @@ cfg.swdr = '0'; % '0' or 'range'
 cfg.spdr = '0'; % '0' or 'dur'
 %-------%
 
-cfg.SWest = 'swstream2'; % 'swstream2'; % or ''
-cfg.SWcla = 'mostsouth'; % 'mostsouth' or 'ytype_xylen' or 'beginend' or 'backup' (backup does no have RR)
+% 'swstart' to use the start point only
+% 'startpoint' to classify based on start point (also specify cfg.else, but not cfg.mintrvl
+
+% 'swstream2' or ''
+% 'mostsouth' or 'ytype_xylen' or 'beginend' or 'backup' (backup does no have RR)
+cfg.SWest = 'swstart'; 
+cfg.SWcla = 'startpoint'; 
 cfg.mintrvl = 0; % if 'backup', this should be 0
 cfg.else = 0; % 1 (f2b) or 2 (b2f) or  0;  if 'backup', this should be ''
 

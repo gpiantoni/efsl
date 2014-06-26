@@ -124,6 +124,15 @@ end
 %---------------------------%
 %-swstream2
 %---------------------------%
+function [Ystart] = swstart(cfg, eegx, eegy, eegz)
+%swstart
+%  check the start point of the slow wave on y-axis
+
+Ystart = eegy(1);
+
+%---------------------------%
+%-swstream2
+%---------------------------%
 function [SWstr] = swstream2(cfg, eegx, eegy, eegz)
 %swstream2
 % create some streams using stream2
@@ -186,6 +195,75 @@ end
 %-------------------------------------------------------------------------%
 %-FUNCTIONS TO CLASSIFY SLOW WAVES
 %-------------------------------------------------------------------------%
+%---------------------------%
+%-startpoint
+%---------------------------%
+function [SWtype, param] = startpoint(cfg, y_pos)
+%startpoint
+%  if the start point is anterior or posterior
+%
+% if the first electrode is frontal (y-coordinate higher than .5), then
+% it's anterior slow wave
+% if the first electrode is posterior (y-coordinate higher than .45), then
+% it's anterior slow wave
+% if it's inbetween, it depends on cfg.else
+% 
+% note that cfg.mintrvl has no influence (leave it to zero)
+%
+% param is tricky to calculate, because it depends on cfg.else. cfg.else
+% determines the threshold. If cfg.else == 1, the threshold is lower; if
+% cfg.else == 2, the threshold is higher. If cfg.else == 0, it uses a
+% different threshold depending on whether it's an anterior or posterior
+% slow wave.
+% Parameter is always positive and it's between 0 and 1. For anterior slow
+% waves, 1 means really anterior and 0 means on the threshold. For
+% posterior slow wave, 1 means really posterior and 0 means on the
+% threshold.
+
+if cfg.else == 1
+  thresh = .45;
+elseif cfg.else == 2
+  thresh = .5;
+else
+  thresh = NaN;
+end
+
+if y_pos > .5
+  SWtype = 1;
+  
+  if isnan(thresh)
+    thresh = .5;
+  end
+  param = (y_pos - thresh) / (1 - thresh);  
+  
+elseif y_pos < .45
+  SWtype = 2; 
+
+  if isnan(thresh)
+    thresh = .45;
+  end
+  param = (thresh - y_pos) / thresh;  
+
+else
+  if cfg.else == 1
+    SWtype = 1;
+    param = (y_pos - thresh) / (1 - thresh);  
+    
+  elseif cfg.else == 2
+    SWtype = 2;
+    param = (thresh - y_pos) / thresh;  
+    
+  else
+    SWtype = 0;
+    param = 0;
+    
+  end   
+  
+end
+
+if param > 1 || param < 0
+  error(['Parameter of slow wave cannot be ' num2str(param)])
+end
 
 %---------------------------%
 %-mostsouth (if the longest stream goes towards the back)
